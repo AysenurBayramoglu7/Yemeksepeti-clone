@@ -1,0 +1,62 @@
+﻿@model List<YemekSepeti.Entities.Kullanici>
+@{
+    ViewData["Title"] = "Kullanıcı Listesi";
+    Layout = "_AdminLayout";
+}
+
+<h2><i class="fas fa-users"></i> Kullanıcı Listesi</h2>
+<hr />
+
+<table class="table table-striped table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Ad</th>
+            <th>Soyad</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Aktif Mi?</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>@u.KullaniciID</td>
+                <td>@u.Ad</td>
+                <td>@u.Soyad</td>
+                <td>@u.Email</td>
+                <td>@u.RolID</td> @* Eğer rol adını göstermek istiyorsan düzenleriz *@
+                <td>
+                    @if (u.IsActive == true)
+                    {
+                        <span class="text-success fw-bold">Aktif</span>
+                    }
+                    else
+                    {
+                        <span class="text-danger fw-bold">Pasif</span>
+                    }
+
+                </td>
+                
+                <td>
+                    @if (u.IsActive == true)
+                    {
+                        <a href="/Admin/KullaniciSil/@u.KullaniciID"
+                           class="btn btn-sm btn-danger"
+                           @*onclick="return confirm('Bu kullanıcıyı pasif hale getirmek istiyor musunuz?');"*@>
+                            Sil
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="text-secondary">Pasif</span>
+                    }
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>

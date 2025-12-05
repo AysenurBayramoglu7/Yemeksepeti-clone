@@ -1,0 +1,67 @@
+﻿@model YemekSepeti.Entities.Urun
+
+@{
+    ViewData["Title"] = "Ürün Düzenle: " + Model.UrunAd;
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <h2><i class="fas fa-edit"></i> Ürün Düzenle</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-5">
+
+            <form asp-action="UrunDuzenle" method="post">
+
+                @* Ürün ID gizli alan *@
+                <input type="hidden" asp-for="UrunId" />
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                @* Ürün Adı *@
+                <div class="mb-3">
+                    <label asp-for="UrunAd" class="form-label">Ürün Adı</label>
+                    <input asp-for="UrunAd" class="form-control" />
+                    <span asp-validation-for="UrunAd" class="text-danger"></span>
+                </div>
+
+                @* Fiyat *@
+                <div class="mb-3">
+                    <label asp-for="Fiyat" class="form-label">Fiyat</label>
+                    <input asp-for="Fiyat" class="form-control" />
+                    <span asp-validation-for="Fiyat" class="text-danger"></span>
+                </div>
+
+                @* Restoran Seçimi *@
+                <div class="mb-3">
+                    <label asp-for="RestoranID" class="form-label">Restoran</label>
+                    <select asp-for="RestoranID" class="form-control" asp-items="ViewBag.Restoranlar"></select>
+                    <span asp-validation-for="RestoranID" class="text-danger"></span>
+                </div>
+
+                @* Kategori Seçimi *@
+                <div class="mb-3">
+                    <label asp-for="UrunKategoriID" class="form-label">Kategori</label>
+                    <select asp-for="UrunKategoriID" class="form-control" asp-items="ViewBag.Kategoriler"></select>
+                    <span asp-validation-for="UrunKategoriID" class="text-danger"></span>
+                </div>
+
+                @* Aktif Mi *@
+                <div class="mb-3 form-check">
+                    <input asp-for="AktifMi" class="form-check-input" type="checkbox" />
+                    <label class="form-check-label" asp-for="AktifMi">Aktif Mi?</label>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Güncelle
+                    </button>
+                    <a asp-action="UrunListesi" class="btn btn-secondary">İptal</a>
+                    
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>

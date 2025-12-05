@@ -1,0 +1,75 @@
+﻿@model YemekSepeti.Entities.Restoran
+
+@{
+    ViewData["Title"] = "Restoran Düzenle: " + Model.RestoranAd;
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <h2><i class="fas fa-edit"></i> Restoran Düzenle</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="RestoranDuzenle" method="post">
+
+               
+                @* KRİTİK ALAN: ID'yi ve FK'ları taşı *@
+                <input type="hidden" asp-for="RestoranID" />
+                @*<input type="hidden" asp-for="KategoriID" />*@ @* Mevcut KategoriID'yi taşı *@
+                <input type="hidden" asp-for="KullaniciID" /> @* Mevcut KullaniciID'yi taşı *@
+               
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                @* Restoran Adı *@
+                <div class="mb-3">
+                    <label asp-for="RestoranAd" class="form-label"></label>
+                    <input asp-for="RestoranAd" class="form-control" />
+                    <span asp-validation-for="RestoranAd" class="text-danger"></span>
+                </div>
+
+                @* Adres *@
+                <div class="mb-3">
+                    <label asp-for="Adres" class="form-label"></label>
+                    <textarea asp-for="Adres" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Adres" class="text-danger"></span>
+                </div>
+
+                @* Telefon *@
+                <div class="mb-3">
+                    <label asp-for="Telefon" class="form-label"></label>
+                    <input asp-for="Telefon" class="form-control" />
+                    <span asp-validation-for="Telefon" class="text-danger"></span>
+                </div>
+
+                @* Puan (Admin güncelleyebilir) 
+                <div class="mb-3">
+                    <label asp-for="Puan" class="form-label"></label>
+                    <input asp-for="Puan" class="form-control" />
+                    <span asp-validation-for="Puan" class="text-danger"></span>
+                </div>*@
+                <div class="mb-3">
+                    <label class="form-label">Kategori</label>
+                    <select asp-for="KategoriID" class="form-select" asp-items="ViewBag.Kategoriler">
+                        <option value="">-- Kategori Seçin --</option>
+                    </select>
+                    <span asp-validation-for="KategoriID" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Güncelle
+                    </button>
+                    <a asp-action="RestoranListesi" class="btn btn-secondary">İptal</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        // Form validasyonu için gerekli scriptler
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

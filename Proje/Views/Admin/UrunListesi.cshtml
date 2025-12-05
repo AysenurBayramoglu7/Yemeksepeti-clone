@@ -1,0 +1,68 @@
+﻿@model List<YemekSepeti.Entities.Urun>
+
+@{
+    ViewData["Title"] = "Ürün Yönetimi";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <h2><i class="fas fa-hamburger"></i> Ürün Yönetimi</h2>
+    <hr />
+
+    <p>
+        <a asp-action="UrunEkle" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Yeni Ürün Ekle
+        </a>
+    </p>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ürün Adı</th>
+                <th>Fiyat</th>
+                <th>Restoran</th>
+                <th>Kategori</th>
+                <th>Aktif Mi?</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var u in Model)
+            {
+                <tr>
+                    <td>@u.UrunId</td>
+                    <td>@u.UrunAd</td>
+                    <td>@u.Fiyat.ToString("C2")</td>
+                    <td>@u.Restoran?.RestoranAd</td>
+                    <td>@u.UrunKategori?.UrunKategoriAd</td>
+
+
+                    <td>
+                        <i class="fas @(u.AktifMi ? "fa-check-circle text-success" : "fa-times-circle text-danger")"></i>
+                    </td>
+
+                    <td>
+                        <a asp-action="UrunDuzenle" asp-route-id="@u.UrunId" class="btn btn-sm btn-info">
+                            <i class="fas fa-edit"></i> Düzenle
+                        </a>
+
+                        <a asp-action="UrunSil" asp-route-id="@u.UrunId" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i> Sil
+                        </a>
+                    </td>
+                </tr>
+            }
+
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="6" class="text-center text-muted">
+                        Henüz ürün bulunmamaktadır.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+

@@ -1,0 +1,38 @@
+﻿@* Views/Admin/KategoriDuzenle.cshtml *@
+@model YemekSepeti.Entities.Kategori
+
+@{
+    ViewData["Title"] = "Kategori Düzenle: " + Model.KategoriAd;
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <h2><i class="fas fa-edit"></i> Kategori Düzenle</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="KategoriDuzenle" method="post">
+
+                @* KRİTİK: ID'yi geri göndermek zorunludur *@
+                <input type="hidden" asp-for="KategoriID" />
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                @* Kategori Adı *@
+                <div class="mb-3">
+                    <label asp-for="KategoriAd" class="form-label">Kategori Adı</label>
+                    <input asp-for="KategoriAd" class="form-control" />
+                    <span asp-validation-for="KategoriAd" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Güncelle
+                    </button>
+                    <a asp-action="KategoriListesi" class="btn btn-secondary">İptal</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

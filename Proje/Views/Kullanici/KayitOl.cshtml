@@ -1,0 +1,57 @@
+﻿
+@model YemekSepeti.Entities.Kullanici
+@{
+    // Varsayılan Layout dosyanızı kullanın
+    Layout = "_Layout";
+    ViewData["Title"] = "Kayıt Ol";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg p-4">
+                <h3 class="card-title text-center mb-4">Yeni Kullanıcı Kaydı</h3>
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <form asp-action="KayitOl" method="post">
+
+                    <div class="mb-3">
+                        <label asp-for="Ad" class="form-label"></label>
+                        <input asp-for="Ad" class="form-control" />
+                        <span asp-validation-for="Ad" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Soyad" class="form-label"></label>
+                        <input asp-for="Soyad" class="form-control" />
+                        <span asp-validation-for="Soyad" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" type="email" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Sifre" class="form-label"></label>
+                        <input asp-for="Sifre" type="password" class="form-control" />
+                        <span asp-validation-for="Sifre" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <input type="submit" value="Kayıt Ol" class="btn btn-primary btn-lg" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        // [Neden]: Form client-side (tarayıcı tarafında) validasyonu için gerekli scriptleri yükler.
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

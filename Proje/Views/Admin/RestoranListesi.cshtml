@@ -1,0 +1,72 @@
+﻿@* Views/Admin/RestoranListesi.cshtml *@
+@model List<YemekSepeti.Entities.Restoran>
+
+@{
+    ViewData["Title"] = "Restoran Yönetimi";
+    Layout = "_AdminLayout"; // Admin paneli layout dosyanızın adını kullanın
+}
+
+<div class="container-fluid">
+    <h2><i class="fas fa-utensils"></i> Restoran Yönetimi</h2>
+    <hr />
+
+    <p>
+        <a asp-action="RestoranEkle" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Yeni Restoran Ekle
+        </a>
+    </p>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Restoran Adı</th>
+                <th>Adres</th>
+                <th>Telefon Numarası</th>
+                <th>Kategori</th>
+                <th>Puan</th>
+                <th>Onay Durumu</th>
+                <th>Aktif Mi?</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.RestoranID</td>
+                    <td>@item.RestoranAd</td>
+                    <td>@item.Adres</td>
+                    <td>@item.Telefon</td>
+                    <td>@item.Kategori?.KategoriAd</td>
+                    <td>@(item.Puan.HasValue? item.Puan.Value.ToString("N1") : "-")</td>
+                    <td>
+                        <span class="badge @(item.OnayliMi ? "bg-success" : "bg-warning")">
+                            @(item.OnayliMi ? "Onaylandı" : "Beklemede")
+                        </span>
+                    </td>
+                    <td>
+                        <i class="fas @(item.AktifMi ? "fa-check-circle text-success" : "fa-times-circle text-danger")"></i>
+                    </td>
+                    
+                    <td>
+                        @if (!item.OnayliMi) // Sadece Onaylı Değilse göster
+                        {
+                            <a asp-action="RestoranOnayla" asp-route-id="@item.RestoranID" class="btn btn-sm btn-success me-1">
+                                <i class="fas fa-check"></i> Onayla
+                            </a>
+                        }
+                        <a asp-action="RestoranDuzenle" asp-route-id="@item.RestoranID" class="btn btn-sm btn-info">Düzenle</a>
+                        <a asp-action="RestoranSil" asp-route-id="@item.RestoranID" class="btn btn-sm btn-danger">Sil</a>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="7" class="text-center text-muted">Henüz kayıtlı restoran bulunmamaktadır.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

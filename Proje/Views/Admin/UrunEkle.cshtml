@@ -1,0 +1,73 @@
+﻿@model YemekSepeti.Entities.Urun
+@{
+    ViewData["Title"] = "Yeni Ürün Ekle";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <h2><i class="fas fa-plus-circle"></i> Yeni Ürün Ekle</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="UrunEkle" method="post">
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <!-- Ürün Adı -->
+                <div class="mb-3">
+                    <label asp-for="UrunAd" class="form-label"></label>
+                    <input asp-for="UrunAd" class="form-control" />
+                    <span asp-validation-for="UrunAd" class="text-danger"></span>
+                </div>
+
+                <!-- Açıklama -->
+                <div class="mb-3">
+                    <label asp-for="Aciklama" class="form-label"></label>
+                    <textarea asp-for="Aciklama" class="form-control"></textarea>
+                </div>
+
+                <!-- Fiyat -->
+                <div class="mb-3">
+                    <label asp-for="Fiyat" class="form-label"></label>
+                    <input asp-for="Fiyat" class="form-control" />
+                </div>
+
+                <!-- Stok -->
+                <div class="mb-3">
+                    <label asp-for="Stok" class="form-label"></label>
+                    <input asp-for="Stok" class="form-control" />
+                </div>
+
+                <!-- Restoran Dropdown -->
+                <div class="mb-3">
+                    <label class="form-label">Restoran</label>
+                    <select asp-for="RestoranID" class="form-select" asp-items="ViewBag.Restoranlar">
+                        <option value="">-- Restoran Seçin --</option>
+                    </select>
+                </div>
+
+                <!-- Ürün Kategori Dropdown -->
+                <div class="mb-3">
+                    <label class="form-label">Ürün Kategorisi</label>
+                    <select asp-for="UrunKategoriID" class="form-select" asp-items="ViewBag.UrunKategorileri">
+                        <option value="">-- Kategori Seçin --</option>
+                    </select>
+                    <span asp-validation-for="UrunKategoriID" class="text-danger"></span>
+                </div>
+
+                <!-- Fotoğraf URL -->
+                <div class="mb-3">
+                    <label asp-for="FotoUrl" class="form-label"></label>
+                    <input asp-for="FotoUrl" class="form-control" placeholder="https://..." />
+                </div>
+
+                <div class="mb-3">
+                    <button class="btn btn-success" type="submit">Kaydet</button>
+                    <a asp-action="UrunListesi" class="btn btn-secondary">Listeye Dön</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
