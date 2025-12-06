@@ -77,10 +77,12 @@ namespace YemekSepeti.WebUI.Controllers
                 return View();
             }
 
-
+            /*Giriş yapan kullanıcının kim olduğunu, hangi ID’ye sahip olduğunu ve hangi role ait olduğunu 
+             ASP.NET Core tam olarak bu kod sayesinde biliyor*/
             // Kullanıcının rol bilgisinin null olmaması için EfKullaniciDal GetUserByCredentials ile Rol include edildi.
             var claims = new List<Claim>
             {
+                // Kullanıcı bilgilerini Claim olarak ekle
                 new Claim(ClaimTypes.Name, kullanici.Email ?? string.Empty),
                 new Claim(ClaimTypes.NameIdentifier, kullanici.KullaniciID.ToString()),
                 new Claim(ClaimTypes.Role, kullanici.Rol?.RolAd ?? "Musteri") // rol null ise default Musteri
@@ -89,6 +91,8 @@ namespace YemekSepeti.WebUI.Controllers
             var identity = new ClaimsIdentity(claims, "Cookies");
             var principal = new ClaimsPrincipal(identity);
 
+            // Kullanıcıyı cookie ile kimlik doğrulama sistemi içine al
+            //Bu Claim listesi kullanıcının tarayıcısına cookie olarak yazılıyor:
             await HttpContext.SignInAsync("Cookies", principal);
 
             // Rol bazlı yönlendirme (isteğe bağlı)

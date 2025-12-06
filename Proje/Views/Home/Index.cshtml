@@ -1,8 +1,82 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Ana Sayfa";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Arama Çubuğu -->
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden border">
+                <span class="input-group-text bg-white border-0 ps-4 text-muted">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                    </svg>
+                </span>
+                <input type="text" class="form-control border-0" placeholder="Yemek, mutfak veya restoran arayın" style="box-shadow: none;">
+                <button class="btn btn-primary text-white fw-bold px-4 m-1 rounded-pill" type="button">Ara</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hero / Karşılama Bölümü -->
+<div class="text-center py-5">
+    <h1 class="display-4 fw-bold">YemekSepeti'ne Hoşgeldiniz</h1>
+    <p class="lead">İstediğiniz lezzetler kapınızda.</p>
+</div>
+
+<!-- Mutfaklar Bölümü (ID: mutfaklar) -->
+<div id="mutfaklar" class="py-5">
+    <div class="container">
+        <h2 class="mb-4">Mutfaklar</h2>
+        <div class="row">
+            <!-- Örnek Mutfak Kartı -->
+            <div class="col-md-3 mb-3">
+                <div class="card shadow-sm border-0 text-center py-3" style="background-color: #f8f9fa;">
+                    <span class="display-4">🍔</span>
+                    <h5 class="card-title mt-2">Burger</h5>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                 <div class="card shadow-sm border-0 text-center py-3" style="background-color: #f8f9fa;">
+                    <span class="display-4">🍕</span>
+                    <h5 class="card-title mt-2">Pizza</h5>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                 <div class="card shadow-sm border-0 text-center py-3" style="background-color: #f8f9fa;">
+                    <span class="display-4">🥙</span>
+                    <h5 class="card-title mt-2">Kebap</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Restoranlar Bölümü (ID: restoranlar) -->
+<div id="restoranlar" class="py-5 bg-light">
+    <div class="container">
+        <h2 class="mb-4">Restoranlar</h2>
+        <div class="row">
+            <!-- Örnek Restoran Kartı -->
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm border-0">
+                    <img src="https://via.placeholder.com/300x150?text=Restoran+1" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">Burger King</h5>
+                        <p class="card-text text-muted">Burger • 30-40 dk • Min. 150 TL</p>
+                    </div>
+                </div>
+            </div>
+             <div class="col-md-4 mb-3">
+                <div class="card shadow-sm border-0">
+                    <img src="https://via.placeholder.com/300x150?text=Restoran+2" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">Dominos Pizza</h5>
+                        <p class="card-text text-muted">Pizza • 20-30 dk • Min. 200 TL</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
