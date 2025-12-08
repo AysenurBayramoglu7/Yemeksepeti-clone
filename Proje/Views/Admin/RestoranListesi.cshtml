@@ -23,6 +23,8 @@
                 <th>Restoran Adı</th>
                 <th>Adres</th>
                 <th>Telefon Numarası</th>
+                <th>Min. Sipariş</th>
+                <th>Ort. Süre</th>
                 <th>Kategori</th>
                 <th>Puan</th>
                 <th>Onay Durumu</th>
@@ -38,6 +40,8 @@
                     <td>@item.RestoranAd</td>
                     <td>@item.Adres</td>
                     <td>@item.Telefon</td>
+                    <td>@item.MinSiparisTutar.ToString("C2")</td>
+                    <td>@item.OrtalamaSure dk</td>
                     <td>@item.Kategori?.KategoriAd</td>
                     <td>@(item.Puan.HasValue? item.Puan.Value.ToString("N1") : "-")</td>
                     <td>

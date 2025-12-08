@@ -43,6 +43,20 @@
                     <span asp-validation-for="Telefon" class="text-danger"></span>
                 </div>
 
+                @* Min Sipariş Tutarı *@
+                <div class="mb-3">
+                    <label asp-for="MinSiparisTutar" class="form-label">Min. Sipariş Tutarı (TL)</label>
+                    <input asp-for="MinSiparisTutar" class="form-control" type="number" step="0.01" />
+                    <span asp-validation-for="MinSiparisTutar" class="text-danger"></span>
+                </div>
+
+                @* Ortalama Süre *@
+                <div class="mb-3">
+                    <label asp-for="OrtalamaSure" class="form-label">Ortalama Süre (Dakika)</label>
+                    <input asp-for="OrtalamaSure" class="form-control" type="number" />
+                    <span asp-validation-for="OrtalamaSure" class="text-danger"></span>
+                </div>
+
                 @* Puan (Admin güncelleyebilir) 
                 <div class="mb-3">
                     <label asp-for="Puan" class="form-label"></label>

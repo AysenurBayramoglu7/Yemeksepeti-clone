@@ -1,4 +1,6 @@
-﻿@{
+﻿@model YemekSepeti.WebUI.Models.HomeViewModel //model tanımı 
+
+@{
     ViewData["Title"] = "Ana Sayfa";
 }
 
@@ -25,58 +27,92 @@
     <p class="lead">İstediğiniz lezzetler kapınızda.</p>
 </div>
 
-<!-- Mutfaklar Bölümü (ID: mutfaklar) -->
-<div id="mutfaklar" class="py-5">
-    <div class="container">
-        <h2 class="mb-4">Mutfaklar</h2>
-        <div class="row">
-            <!-- Örnek Mutfak Kartı -->
-            <div class="col-md-3 mb-3">
-                <div class="card shadow-sm border-0 text-center py-3" style="background-color: #f8f9fa;">
-                    <span class="display-4">🍔</span>
-                    <h5 class="card-title mt-2">Burger</h5>
+<!-- Mutfaklar Bölümü  -->
+<h2 class="mb-4">Mutfaklar</h2>
+<div class="kategori-slider-container mt-5">
+    
+    <button class="slider-btn left-btn" onclick="scrollSlider(-300)">❮</button>
+    <div class="kategori-slider">
+        @foreach (var kategori in Model.Kategoriler)
+        {
+            <a href="/Restoran/Index?kategoriId=@kategori.KategoriID" class="text-decoration-none">
+                <div class="kategori-item text-center">
+                    <img src="@kategori.KategoriResimUrl" class="kategori-img" />
+                    <p class="kategori-title">@kategori.KategoriAd</p>
                 </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                 <div class="card shadow-sm border-0 text-center py-3" style="background-color: #f8f9fa;">
-                    <span class="display-4">🍕</span>
-                    <h5 class="card-title mt-2">Pizza</h5>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                 <div class="card shadow-sm border-0 text-center py-3" style="background-color: #f8f9fa;">
-                    <span class="display-4">🥙</span>
-                    <h5 class="card-title mt-2">Kebap</h5>
-                </div>
-            </div>
-        </div>
+            </a>
+        }
     </div>
+    <!-- Slider Buttons -->
+    <button class="slider-btn right-btn" onclick="scrollSlider(300)">❯</button>
 </div>
 
-<!-- Restoranlar Bölümü (ID: restoranlar) -->
-<div id="restoranlar" class="py-5 bg-light">
-    <div class="container">
-        <h2 class="mb-4">Restoranlar</h2>
-        <div class="row">
-            <!-- Örnek Restoran Kartı -->
-            <div class="col-md-4 mb-3">
-                <div class="card shadow-sm border-0">
-                    <img src="https://via.placeholder.com/300x150?text=Restoran+1" class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <h5 class="card-title fw-bold">Burger King</h5>
-                        <p class="card-text text-muted">Burger • 30-40 dk • Min. 150 TL</p>
+<script>
+    function scrollSlider(value) {
+        const slider = document.querySelector('.kategori-slider');
+        slider.scrollBy({ left: value, behavior: 'smooth' });
+    }
+</script>
+<h2 class="mt-5 mb-4">Restoranlar</h2>
+<!--Restoran kısmı-->
+<div class="row">
+@foreach (var r in Model.Restoranlar)
+{
+        <div class="col-md-4 mb-4">
+
+            <a asp-controller="Restoran"
+               asp-action="Detay"
+               asp-route-id="@r.RestoranID"
+               class="text-decoration-none text-dark">
+
+                <div class="card shadow-sm border-0 restoran-card">
+
+                    <div class="position-relative">
+                        <img src="@r.RestoranResimUrl" class="card-img-top restoran-img" />
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <button class="fav-btn">
+                                <i class="bi bi-heart"></i>
+                            </button>
+                        }
                     </div>
-                </div>
-            </div>
-             <div class="col-md-4 mb-3">
-                <div class="card shadow-sm border-0">
-                    <img src="https://via.placeholder.com/300x150?text=Restoran+2" class="card-img-top" alt="...">
+
                     <div class="card-body">
-                        <h5 class="card-title fw-bold">Dominos Pizza</h5>
-                        <p class="card-text text-muted">Pizza • 20-30 dk • Min. 200 TL</p>
+                        <h5 class="card-title">@r.RestoranAd</h5>
+
+                        <p class="text-muted">
+                            ⏱ @r.OrtalamaSure dk • 🛒 Min: @r.MinSiparisTutar TL
+                        </p>
+
+                        <p class="text-muted small">
+                            ⭐ @r.Puan / 5
+                        </p>
                     </div>
+
                 </div>
+
+            </a>
+
+        </div>
+}
+    @* @foreach (var r in Model.Restoranlar)
+    {
+        <div class="col-md-4 mb-4">
+                <div class="card shadow-sm border-0 restoran-card">
+
+                <img src="@r.RestoranResimUrl" class="card-img-top restoran-img" />
+
+                <div class="card-body">
+                    <h5 class="card-title">@r.RestoranAd</h5>
+
+                    <p class="text-muted">
+                        ⏱ @r.OrtalamaSure dk • 🛒 Min: @r.MinSiparisTutar TL
+                    </p>
+                </div>
+
             </div>
         </div>
-    </div>
-</div>
+    } *@
+
+

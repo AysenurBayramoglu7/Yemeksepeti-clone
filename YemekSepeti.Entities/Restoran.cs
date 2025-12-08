@@ -28,6 +28,11 @@ namespace YemekSepeti.Entities
         public bool OnayliMi { get; set; } = false;
         public decimal? Puan { get; set; }
         public bool AktifMi { get; set; } = true;
+        public string? RestoranResimUrl { get; set; }
+        public decimal MinSiparisTutar { get; set; }   // Örn: 150.00
+        public int OrtalamaSure { get; set; }          // Örn: 30 (dakika)
+
+
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         //Buraya da 1-N ilişkisinden dolayı koleksiyon navigasyonu koyuyoruz

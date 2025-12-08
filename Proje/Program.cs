@@ -45,6 +45,8 @@ builder.Services.AddScoped<IUrunKategoriService, UrunKategoriManager>();
 builder.Services.AddScoped<IUrunKategoriDal, EfUrunKategoriDal>();
 
 
+
+
 var app = builder.Build();
 
 // Veritabanı migrasyonlarını başlangıçta otomatik olarak uygula

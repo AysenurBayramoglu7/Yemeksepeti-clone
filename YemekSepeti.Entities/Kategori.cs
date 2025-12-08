@@ -14,5 +14,7 @@ namespace YemekSepeti.Entities
         [Required]
         [MaxLength(100)]
         public string KategoriAd { get; set; } = string.Empty;
+
+        public string? KategoriResimUrl { get; set; }
     }
 }

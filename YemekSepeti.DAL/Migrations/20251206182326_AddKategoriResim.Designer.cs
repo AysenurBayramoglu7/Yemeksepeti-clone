@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using YemekSepeti.DAL;
 
@@ -11,9 +12,11 @@ using YemekSepeti.DAL;
 namespace YemekSepeti.DAL.Migrations
 {
     [DbContext(typeof(YemekSepetiDbContext))]
-    partial class YemekSepetiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251206182326_AddKategoriResim")]
+    partial class AddKategoriResim
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -135,14 +138,8 @@ namespace YemekSepeti.DAL.Migrations
                     b.Property<int>("KullaniciID")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("MinSiparisTutar")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<bool>("OnayliMi")
                         .HasColumnType("bit");
-
-                    b.Property<int>("OrtalamaSure")
-                        .HasColumnType("int");
 
                     b.Property<decimal?>("Puan")
                         .HasPrecision(3, 2)
@@ -152,9 +149,6 @@ namespace YemekSepeti.DAL.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("RestoranResimUrl")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Telefon")
                         .HasMaxLength(20)

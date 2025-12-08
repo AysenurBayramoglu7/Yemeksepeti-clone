@@ -169,6 +169,8 @@ namespace YemekSepeti.WebUI.Controllers
             existing.Adres = restoran.Adres;
             existing.Telefon = restoran.Telefon;
             existing.KategoriID = restoran.KategoriID;
+            existing.MinSiparisTutar = restoran.MinSiparisTutar;
+            existing.OrtalamaSure = restoran.OrtalamaSure;
 
             _restoranService.TUpdate(existing);
 
@@ -401,8 +403,6 @@ namespace YemekSepeti.WebUI.Controllers
 
             return RedirectToAction("KullaniciListesi");
         }
-
-
 
     }
 }
