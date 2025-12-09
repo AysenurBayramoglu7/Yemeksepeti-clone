@@ -7,7 +7,9 @@
     @foreach (var r in Model)
     {
         <div class="col-md-4 mb-4">
-            <div class="card shadow-sm border-0 restoran-card">
+
+            <a href="/Restoran/Detay/@r.RestoranID" class="text-decoration-none text-dark">
+                <div class="card shadow-sm border-0 restoran-card h-100">
 
                 <div class="position-relative">
                     <img src="@r.RestoranResimUrl" class="card-img-top restoran-img" />
