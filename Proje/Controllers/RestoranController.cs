@@ -9,10 +9,12 @@ namespace YemekSepeti.WebUI.Controllers
     {
         private readonly IRestoranService _restoranService;
         private readonly IUrunService _urunService;
-        public RestoranController(IRestoranService restoranService, IUrunService urunService)
+        private readonly IUrunKategoriService _urunkategoriService;
+        public RestoranController(IRestoranService restoranService, IUrunService urunService, IUrunKategoriService urunkategoriService)
         {
             _restoranService = restoranService;
             _urunService = urunService;
+            _urunkategoriService = urunkategoriService;
         }
         //kategoriId'ye göre restoranları listeleme
         //sadece aktif ve onaylı restoranlar gösterilir
@@ -36,13 +38,29 @@ namespace YemekSepeti.WebUI.Controllers
                 x => x.RestoranID == id && x.AktifMi == true
             );
 
+            // Kategorileri ürünlere göre alıyoruz
+            var kategoriIdList = urunler
+                .Select(x => x.UrunKategoriID)
+                .Distinct()
+                .ToList();
+
+            var kategoriler = _urunkategoriService.TGetList(
+             x => kategoriIdList.Contains(x.UrunKategoriID)
+             )
+            .OrderBy(x => x.SiraNo)
+    .       ToList();
+
+
             var model = new RestoranDetayViewModel
             {
                 Restoran = restoran,
-                Urunler = urunler
+                Urunler = urunler,
+                Kategoriler = kategoriler
             };
 
-            return View(model); // Artık Detay.cshtml bu View'i karşılayacak
+            return View(model);
         }
+
+
     }
 }

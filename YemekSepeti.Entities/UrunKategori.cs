@@ -14,6 +14,8 @@ namespace YemekSepeti.Entities
         [Required]
         [MaxLength(100)]
         public string UrunKategoriAd { get; set; } = string.Empty;
+        // kategori sıralaması için Sayfada dah mantıklı göstermek için
+        public int SiraNo { get; set; } = 1; //Sıra yazmazsak varsayılan 1 olsun
         // 1 kategori → N ürün
         public virtual ICollection<Urun> Urunler { get; set; } = new HashSet<Urun>();
     }

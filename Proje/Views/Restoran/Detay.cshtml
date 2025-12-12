@@ -10,33 +10,38 @@
 }
 else
 {
-    <div class="row mt-4">
-        @foreach (var u in Model.Urunler)
-        {
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm border-0">
+    <!-- ÜRÜNLERİ KATEGORİYE GÖRE GRUPLAMA -->
+    @foreach (var kategori in Model.Kategoriler)
+    {
+        <h3 class="mt-4">@kategori.UrunKategoriAd</h3>
+        <hr />
 
-                    <img src="@u.FotoUrl"
-                         class="card-img-top"
-                         style="height:180px; object-fit:cover;" />
+        <div class="row">
+            @foreach (var u in Model.Urunler.Where(x => x.UrunKategoriID == kategori.UrunKategoriID))
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm border-0">
 
-                    <div class="card-body">
-                        <h5 class="card-title">@u.UrunAd</h5>
-                        <p class="text-muted">@u.Aciklama</p>
+                        <img src="@u.FotoUrl"
+                             class="card-img-top"
+                             style="height:180px; object-fit:cover;" />
 
-                        <div class="d-flex justify-content-between">
-                            <strong>@u.Fiyat TL</strong>
+                        <div class="card-body">
+                            <h5 class="card-title">@u.UrunAd</h5>
+                            <p class="text-muted">@u.Aciklama</p>
 
-                            <button class="btn btn-primary btn-sm">
-                                <i class="bi bi-plus"></i>
-                                Ekle
-                            </button>
+                            <div class="d-flex justify-content-between">
+                                <strong>@u.Fiyat TL</strong>
+
+                                <button class="btn btn-primary btn-sm">
+                                    <i class="bi bi-plus"></i>
+                                    Ekle
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        }
-    </div>
+            }
+        </div>
+    }
 }
-
-
