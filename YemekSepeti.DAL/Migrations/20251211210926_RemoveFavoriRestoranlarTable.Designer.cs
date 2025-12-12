@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using YemekSepeti.DAL;
 
@@ -11,9 +12,11 @@ using YemekSepeti.DAL;
 namespace YemekSepeti.DAL.Migrations
 {
     [DbContext(typeof(YemekSepetiDbContext))]
-    partial class YemekSepetiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251211210926_RemoveFavoriRestoranlarTable")]
+    partial class RemoveFavoriRestoranlarTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,10 +44,9 @@ namespace YemekSepeti.DAL.Migrations
 
                     b.HasKey("FavoriID");
 
-                    b.HasIndex("RestoranID");
+                    b.HasIndex("KullaniciID");
 
-                    b.HasIndex("KullaniciID", "RestoranID")
-                        .IsUnique();
+                    b.HasIndex("RestoranID");
 
                     b.ToTable("FavoriRestoranlar");
                 });
@@ -407,13 +409,13 @@ namespace YemekSepeti.DAL.Migrations
                     b.HasOne("YemekSepeti.Entities.Kullanici", "Kullanici")
                         .WithMany("FavoriRestoranlar")
                         .HasForeignKey("KullaniciID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("YemekSepeti.Entities.Restoran", "Restoran")
                         .WithMany("FavoriKullanicilar")
                         .HasForeignKey("RestoranID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Kullanici");

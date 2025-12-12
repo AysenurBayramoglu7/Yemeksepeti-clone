@@ -72,8 +72,17 @@
 
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <button class="fav-btn">
-                                <i class="bi bi-heart"></i>
+                            bool isFav = Model.FavoriRestoranIdleri != null && Model.FavoriRestoranIdleri.Contains(r.RestoranID);
+                            
+                            <button class="fav-btn" onclick="favoriEkle(@r.RestoranID, event, this)" data-fav="@isFav.ToString().ToLower()">
+                                @if(isFav)
+                                {
+                                    <i class="bi bi-heart-fill" style="color: red;"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-heart"></i>
+                                }
                             </button>
                         }
                     </div>
@@ -116,3 +125,45 @@
     } *@
 
 
+
+<script>
+    function favoriEkle(restoranId, event, btnElement) {
+        // Kartın linkine gitmesini engelle
+        event.preventDefault();
+        event.stopPropagation();
+
+        // İsteği gönderilecek URL
+        const url = '/Favori/Ekle';
+        
+        // jQuery veya fetch ile POST isteği
+        // Burada native fetch kullanıyoruz (modern tarayıcılar için)
+        fetch(url + '?restoranId=' + restoranId, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Başarılıysa ikonu doldur (veya sınıf değiştir)
+                const icon = btnElement.querySelector('i');
+                if (icon.classList.contains('bi-heart')) {
+                    icon.classList.remove('bi-heart');
+                    icon.classList.add('bi-heart-fill');
+                    icon.style.color = 'red'; // İsteğe bağlı renk değişimi
+                } else {
+                    // Zaten doluysa tekrar basınca çıkarmak isterseniz 'Sil' metodunu çağırmalısınız.
+                    // Şimdilik sadece "Ekle" senaryosu yapıldı.
+                }
+                alert(data.message);
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Hata:', error);
+            alert('Bir hata oluştu.');
+        });
+    }
+</script>

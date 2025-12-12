@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using YemekSepeti.DAL;
 
@@ -11,9 +12,11 @@ using YemekSepeti.DAL;
 namespace YemekSepeti.DAL.Migrations
 {
     [DbContext(typeof(YemekSepetiDbContext))]
-    partial class YemekSepetiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251209215145_AddFavoriRestoranTable")]
+    partial class AddFavoriRestoranTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,27 +27,21 @@ namespace YemekSepeti.DAL.Migrations
 
             modelBuilder.Entity("YemekSepeti.Entities.FavoriRestoranlar", b =>
                 {
-                    b.Property<int>("FavoriID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FavoriID"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("KullaniciID")
                         .HasColumnType("int");
 
                     b.Property<int>("RestoranID")
                         .HasColumnType("int");
 
-                    b.HasKey("FavoriID");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FavoriID")
+                        .HasColumnType("int");
+
+                    b.HasKey("KullaniciID", "RestoranID");
 
                     b.HasIndex("RestoranID");
-
-                    b.HasIndex("KullaniciID", "RestoranID")
-                        .IsUnique();
 
                     b.ToTable("FavoriRestoranlar");
                 });

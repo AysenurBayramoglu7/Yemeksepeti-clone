@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using YemekSepeti.DAL;
 
@@ -11,9 +12,11 @@ using YemekSepeti.DAL;
 namespace YemekSepeti.DAL.Migrations
 {
     [DbContext(typeof(YemekSepetiDbContext))]
-    partial class YemekSepetiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251211212539_ForceDropFavoriTable")]
+    partial class ForceDropFavoriTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,33 +24,6 @@ namespace YemekSepeti.DAL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("YemekSepeti.Entities.FavoriRestoranlar", b =>
-                {
-                    b.Property<int>("FavoriID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FavoriID"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("KullaniciID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RestoranID")
-                        .HasColumnType("int");
-
-                    b.HasKey("FavoriID");
-
-                    b.HasIndex("RestoranID");
-
-                    b.HasIndex("KullaniciID", "RestoranID")
-                        .IsUnique();
-
-                    b.ToTable("FavoriRestoranlar");
-                });
 
             modelBuilder.Entity("YemekSepeti.Entities.Kategori", b =>
                 {
@@ -402,25 +378,6 @@ namespace YemekSepeti.DAL.Migrations
                     b.ToTable("Yorumlar");
                 });
 
-            modelBuilder.Entity("YemekSepeti.Entities.FavoriRestoranlar", b =>
-                {
-                    b.HasOne("YemekSepeti.Entities.Kullanici", "Kullanici")
-                        .WithMany("FavoriRestoranlar")
-                        .HasForeignKey("KullaniciID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("YemekSepeti.Entities.Restoran", "Restoran")
-                        .WithMany("FavoriKullanicilar")
-                        .HasForeignKey("RestoranID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Kullanici");
-
-                    b.Navigation("Restoran");
-                });
-
             modelBuilder.Entity("YemekSepeti.Entities.Kullanici", b =>
                 {
                     b.HasOne("YemekSepeti.Entities.Rol", "Rol")
@@ -536,8 +493,6 @@ namespace YemekSepeti.DAL.Migrations
 
             modelBuilder.Entity("YemekSepeti.Entities.Kullanici", b =>
                 {
-                    b.Navigation("FavoriRestoranlar");
-
                     b.Navigation("Siparisler");
 
                     b.Navigation("Yorumlar");
@@ -545,8 +500,6 @@ namespace YemekSepeti.DAL.Migrations
 
             modelBuilder.Entity("YemekSepeti.Entities.Restoran", b =>
                 {
-                    b.Navigation("FavoriKullanicilar");
-
                     b.Navigation("Siparisler");
 
                     b.Navigation("Urunler");

@@ -12,6 +12,10 @@ namespace YemekSepeti.DAL
 {   // Veri tabanına yansıtılmak istenen tüm sınıflar burda olucak
     public class YemekSepetiDbContext : DbContext
     {
+        public YemekSepetiDbContext()
+        {
+        }
+
         public YemekSepetiDbContext(DbContextOptions<YemekSepetiDbContext> options) : base(options)
         {
         }
@@ -27,6 +31,8 @@ namespace YemekSepeti.DAL
         public DbSet<Yorum> Yorumlar { get; set; }
         public DbSet<SiparisDetay> SiparisDetaylari { get; set; }
         public DbSet<UrunKategori> UrunKategoriler { get; set; }
+        public DbSet<FavoriRestoranlar> FavoriRestoranlar { get; set; }
+
 
 
         // YemekSepetiDbContext.cs içinde OnModelCreating metodunun sonuna ekleyin
@@ -87,24 +93,6 @@ namespace YemekSepeti.DAL
                 .WithMany(u => u.SiparisDetaylar)
                 .HasForeignKey(sd => sd.UrunID)
                 .OnDelete(DeleteBehavior.Restrict); // Kısıtla
-            //Birincil Anahtarını (Primary Key - PK) birden fazla sütundan oluşacak şekilde tanımlamamızı sağlar. Buna Birleşik Anahtar (Composite Key) denir.
-            // FavoriRestoranlar tablosunu birleşik anahtar olarak tanımlıyoruz
-            modelBuilder.Entity<FavoriRestoranlar>()
-                .HasKey(fr => new { fr.KullaniciID, fr.RestoranID });
-
-            // Kullanici - Favori İlişkisi (Restrict ile döngüsel silme engelleniyor)
-            modelBuilder.Entity<FavoriRestoranlar>()
-                .HasOne(fr => fr.Kullanici)
-                .WithMany(k => k.FavoriRestoranlar)
-                .HasForeignKey(fr => fr.KullaniciID)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Restoran - Favori İlişkisi (Restrict ile döngüsel silme engelleniyor)
-            modelBuilder.Entity<FavoriRestoranlar>()
-                .HasOne(fr => fr.Restoran)
-                .WithMany(r => r.FavoriKullanicilar)
-                .HasForeignKey(fr => fr.RestoranID)
-                .OnDelete(DeleteBehavior.Restrict);
 
             // ❗ BURAYA EKLENİYOR
             modelBuilder.Entity<Restoran>().ToTable("Restoran");
@@ -121,12 +109,35 @@ namespace YemekSepeti.DAL
 
             // Puan Alanı
             modelBuilder.Entity<Restoran>().Property(r => r.Puan).HasPrecision(3, 2); // 0.00 ile 9.99 arası puanlama için
+            modelBuilder.Entity<Restoran>().Property(r => r.MinSiparisTutar).HasColumnType("decimal(18,2)");
+
 
             modelBuilder.Entity<Rol>().HasData(
                  new Rol { RolID = 1, RolAd = "Admin" },
                 new Rol { RolID = 2, RolAd = "RestoranSahibi" },
                 new Rol { RolID = 3, RolAd = "Musteri" }
             );
+            
+            //FAVORİ AYARLARI
+            modelBuilder.Entity<FavoriRestoranlar>()
+                .HasKey(fr => fr.FavoriID);
+
+            // Çifte kaydı engellemek için Unique Index
+            modelBuilder.Entity<FavoriRestoranlar>()
+                .HasIndex(fr => new { fr.KullaniciID, fr.RestoranID })
+                .IsUnique();
+
+            modelBuilder.Entity<FavoriRestoranlar>()
+                .HasOne(fr => fr.Kullanici)
+                .WithMany(k => k.FavoriRestoranlar)
+                .HasForeignKey(fr => fr.KullaniciID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<FavoriRestoranlar>()
+                .HasOne(fr => fr.Restoran)
+                .WithMany(r => r.FavoriKullanicilar)
+                .HasForeignKey(fr => fr.RestoranID)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

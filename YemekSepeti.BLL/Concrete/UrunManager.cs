@@ -45,5 +45,11 @@ namespace YemekSepeti.BLL.Concrete
         {
             _urunDal.Update(entity);
         }
+        //SP ile ürünleri restoranId'ye göre getirme
+        public List<Urun> GetUrunlerByRestoranSP(int restoranId)
+        {
+            return _urunDal.GetUrunlerByRestoranSP(restoranId);
+        }
+
     }
 }

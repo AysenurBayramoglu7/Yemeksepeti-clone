@@ -6,6 +6,7 @@ namespace YemekSepeti.WebUI.Models
     {
         public List<Kategori> Kategoriler { get; set; }
         public List<Restoran> Restoranlar { get; set; }
+        public List<int> FavoriRestoranIdleri { get; set; } = new List<int>();
 
 
 

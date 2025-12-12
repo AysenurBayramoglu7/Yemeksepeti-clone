@@ -9,5 +9,6 @@ namespace YemekSepeti.BLL.Abstract
 {
     public interface IUrunService : IGenericService<Urun>
     {
+        List<Urun> GetUrunlerByRestoranSP(int restoranId);
     }
 }

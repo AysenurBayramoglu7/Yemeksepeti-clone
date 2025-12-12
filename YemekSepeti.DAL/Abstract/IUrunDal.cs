@@ -10,5 +10,7 @@ namespace YemekSepeti.DAL.Abstract
     public interface IUrunDal : IGenericDal<Urun>
     {
         // Ürüne özel ek metodlar buraya yazılır
+        List<Urun> GetUrunlerByRestoranSP(int restoranId);
     }
+   
 }

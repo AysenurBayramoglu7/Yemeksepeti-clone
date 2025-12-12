@@ -34,9 +34,11 @@ namespace YemekSepeti.WebUI.Controllers
             if (restoran == null)
                 return NotFound();
 
-            var urunler = _urunService.TGetList(
+            /*var urunler = _urunService.TGetList(
                 x => x.RestoranID == id && x.AktifMi == true
-            );
+            );*///SP eklenicek
+            var urunler = _urunService.GetUrunlerByRestoranSP(id);
+
 
             // Kategorileri ürünlere göre alıyoruz
             var kategoriIdList = urunler

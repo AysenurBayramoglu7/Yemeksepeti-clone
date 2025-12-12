@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using YemekSepeti.DAL;
 
@@ -11,9 +12,11 @@ using YemekSepeti.DAL;
 namespace YemekSepeti.DAL.Migrations
 {
     [DbContext(typeof(YemekSepetiDbContext))]
-    partial class YemekSepetiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251211202615_FavoriYenidenKurulum")]
+    partial class FavoriYenidenKurulum
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -9,5 +9,6 @@ namespace YemekSepeti.BLL.Abstract
 {
     public interface IRolService : IGenericService<Rol>
     {
+
     }
 }

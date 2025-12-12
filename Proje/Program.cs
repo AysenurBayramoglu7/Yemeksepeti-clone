@@ -1,9 +1,10 @@
-using YemekSepeti.DAL;
 using Microsoft.EntityFrameworkCore;
-using YemekSepeti.DAL.Abstract;
-using YemekSepeti.DAL.EntityFramework;
 using YemekSepeti.BLL.Abstract;
 using YemekSepeti.BLL.Concrete;
+using YemekSepeti.DAL;
+using YemekSepeti.DAL.Abstract;
+using YemekSepeti.DAL.EntityFramework;
+using static YemekSepeti.DAL.Abstract.IFavoriRestoranlarDal;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +44,9 @@ builder.Services.AddScoped<IUrunService, UrunManager>();
 
 builder.Services.AddScoped<IUrunKategoriService, UrunKategoriManager>();
 builder.Services.AddScoped<IUrunKategoriDal, EfUrunKategoriDal>();
+
+builder.Services.AddScoped<IFavoriRestoranlarDal, EfFavoriRestoranlarDal>();
+builder.Services.AddScoped<IFavoriRestoranlarService, FavoriRestoranlarManager>();
 
 
 
