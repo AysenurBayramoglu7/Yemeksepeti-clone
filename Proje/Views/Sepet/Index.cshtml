@@ -1,0 +1,67 @@
+@model YemekSepeti.WebUI.Models.SepetViewModel
+
+@{
+    ViewData["Title"] = "Sepetim";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Sepetim</h2>
+
+    @if (Model.SepetItems.Count == 0)
+    {
+        <div class="alert alert-warning">
+            Sepetinizde henüz ürün bulunmuyor. <a href="@Url.Action("Index", "Home")" class="alert-link">Alışverişe Başla</a>
+        </div>
+    }
+    else
+    {
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Ürün</th>
+                    <th>Fiyat</th>
+                    <th>Adet</th>
+                    <th>Toplam</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.SepetItems)
+                {
+                    <tr>
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.FotoUrl))
+                            {
+                                <img src="@item.FotoUrl" alt="@item.UrunAd" style="width: 50px; height: 50px; object-fit: cover;" class="me-2 rounded" />
+                            }
+                            @item.UrunAd
+                        </td>
+                        <td>@item.Fiyat.ToString("C2")</td>
+                        <td>@item.Adet</td>
+                        <td>@item.Toplam.ToString("C2")</td>
+                        <td>
+                            <form asp-action="Sil" asp-controller="Sepet" method="post">
+                                <input type="hidden" name="urunId" value="@item.UrunId" />
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-trash"></i> Sil
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end fw-bold">Genel Toplam:</td>
+                    <td class="fw-bold">@Model.GenelToplam.ToString("C2")</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="d-flex justify-content-end">
+            <a href="@Url.Action("Temizle", "Sepet")" class="btn btn-outline-secondary me-2">Sepeti Temizle</a>
+            <button class="btn btn-success">Siparişi Tamamla (Yakında)</button>
+        </div>
+    }
+</div>

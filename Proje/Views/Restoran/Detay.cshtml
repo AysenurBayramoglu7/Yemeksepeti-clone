@@ -33,10 +33,20 @@ else
                             <div class="d-flex justify-content-between">
                                 <strong>@u.Fiyat TL</strong>
 
-                                <button class="btn btn-primary btn-sm">
-                                    <i class="bi bi-plus"></i>
-                                    Ekle
-                                </button>
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <button class="btn btn-primary btn-sm" onclick="sepeteEkle(@u.UrunId)">
+                                        <i class="bi bi-plus"></i>
+                                        Ekle
+                                    </button>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-primary btn-sm" asp-controller="Kullanici" asp-action="GirisYap">
+                                        <i class="bi bi-plus"></i>
+                                        Ekle
+                                    </a>
+                                }
                             </div>
                         </div>
                     </div>
@@ -44,4 +54,20 @@ else
             }
         </div>
     }
+}
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function sepeteEkle(urunId) {
+            $.post('/Sepet/Ekle', { urunId: urunId, adet: 1 }, function (response) {
+                if (response.success) {
+                    alert("Ürün sepete eklendi!");
+                    $("#cartCount").text(response.sepetCount);
+                    $("#cartCount").show(); // Eğer gizliyse göster
+                } else {
+                    alert("Hata: " + response.message);
+                }
+            });
+        }
+    </script>
 }

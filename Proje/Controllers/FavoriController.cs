@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using YemekSepeti.BLL.Abstract;
+using YemekSepeti.Entities;
+using YemekSepeti.WebUI.Models;
 
 namespace Proje.Controllers
 {
@@ -37,19 +39,19 @@ namespace Proje.Controllers
             {
                 return Json(new { success = false, message = "Lütfen önce giriş yapınız." });
             }
-
+            //ClaimTypes.NameIdentifier= kullanıcının ıd sini tutan yer
             // Claims üzerinden Kullanıcı ID'sini al
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);//kullanıcının ID’sini cookie içine claim olarak saklar.
             if (userIdClaim == null)
             {
                 return Json(new { success = false, message = "Kullanıcı kimliği doğrulanamadı." });
             }
 
-            int kullaniciId = int.Parse(userIdClaim.Value);
+            int kullaniciId = int.Parse(userIdClaim.Value);//ID yi string den int e çeviriyoruz.
 
             try
             {
-                _favoriService.FavoriEkle(kullaniciId, restoranId);
+                _favoriService.FavoriEkle(kullaniciId, restoranId); // Favori eklemek için metodu çağır.
                 return Json(new { success = true, message = "Restoran favorilere eklendi." });
             }
             catch (Exception ex)

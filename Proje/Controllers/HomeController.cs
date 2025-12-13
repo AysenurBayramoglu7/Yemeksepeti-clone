@@ -46,13 +46,13 @@ namespace Proje.Controllers
                 if (userIdClaim != null)
                 {
                     int userId = int.Parse(userIdClaim.Value);
-                    var favoriRestoranlar = _favoriService.FavorileriGetir(userId);
+                    var favoriRestoranlar = _favoriService.FavorileriGetir(userId);// Kullanıcının favori restoranlarını alıyoruz
                     // Sadece ID'leri listeye alıyoruz
                     model.FavoriRestoranIdleri = favoriRestoranlar.Select(x => x.RestoranID).ToList();
                 }
             }
 
-            return View(model);
+            return View(model); // Tüm verileri ViewModel ile birlikte View'a gönder
         }
 
         public IActionResult Privacy()

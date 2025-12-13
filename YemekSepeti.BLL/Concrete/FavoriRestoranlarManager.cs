@@ -18,6 +18,7 @@ namespace YemekSepeti.BLL.Concrete
         {
             _favoriRestoranlarDal = favoriRestoranlarDal;
         }
+        //Favoriye özel metodlar
         public void FavoriEkle(int kullaniciId, int restoranId)
         {
             _favoriRestoranlarDal.FavoriEkle(kullaniciId, restoranId);

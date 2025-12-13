@@ -105,35 +105,33 @@
 
         </div>
 }
-    @* @foreach (var r in Model.Restoranlar)
-    {
-        <div class="col-md-4 mb-4">
-                <div class="card shadow-sm border-0 restoran-card">
 
-                <img src="@r.RestoranResimUrl" class="card-img-top restoran-img" />
-
-                <div class="card-body">
-                    <h5 class="card-title">@r.RestoranAd</h5>
-
-                    <p class="text-muted">
-                        ⏱ @r.OrtalamaSure dk • 🛒 Min: @r.MinSiparisTutar TL
-                    </p>
-                </div>
-
-            </div>
-        </div>
-    } *@
-
-
-
-<script>
+ <script>
+             // Sayfaya "Geri" tuşuyla gelindiyse sayfayı zorla yenile
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload();
+            }
+        });
+        //Bu script ana sayfada restoran kartındaki kalbe tıklayınca çalışıyor.
+        /*restoranId: Hangi restoran favoriye eklenecek
+        event: Tıklama olayı (linke gitmeyi engellemek için)
+        btnElement: Tıklanan butonun HTML elemanı (ikon değiştirmek için) */
     function favoriEkle(restoranId, event, btnElement) {
         // Kartın linkine gitmesini engelle
-        event.preventDefault();
-        event.stopPropagation();
+        event.preventDefault();//Kalp ikonuna tıklanınca restoran detay sayfasına gitmeyi engellemek.
+        event.stopPropagation();//Tıklamanın kart içindeki diğer eventlere yayılmasını durdurur.
+         //Amac: kalp ikonu doluysa ekleme değil silme yapar.
+            // İkonu seçelim
+            const icon = btnElement.querySelector('i');
+            // İkon dolu kalp mi? (yani zaten favori mi?)
+            const isFavorite = icon.classList.contains('bi-heart-fill');
 
-        // İsteği gönderilecek URL
-        const url = '/Favori/Ekle';
+                // Eğer favoriyse 'Sil' metoduna, değilse 'Ekle' metoduna git
+            const url = isFavorite ? '/Favori/Sil' : '/Favori/Ekle';
+
+            // İsteği gönderilecek URL
+        //const url = '/Favori/Ekle';
         
         // jQuery veya fetch ile POST isteği
         // Burada native fetch kullanıyoruz (modern tarayıcılar için)
@@ -146,16 +144,18 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Başarılıysa ikonu doldur (veya sınıf değiştir)
-                const icon = btnElement.querySelector('i');
-                if (icon.classList.contains('bi-heart')) {
-                    icon.classList.remove('bi-heart');
-                    icon.classList.add('bi-heart-fill');
-                    icon.style.color = 'red'; // İsteğe bağlı renk değişimi
-                } else {
-                    // Zaten doluysa tekrar basınca çıkarmak isterseniz 'Sil' metodunu çağırmalısınız.
-                    // Şimdilik sadece "Ekle" senaryosu yapıldı.
-                }
+                   // İşlem başarılıysa ikonu tam tersine çevir
+                    if (isFavorite) {
+                        // Favoriydi, silindi -> Boş kalp yap
+                        icon.classList.remove('bi-heart-fill');
+                        icon.classList.add('bi-heart');
+                        icon.style.color = ''; // Rengi sıfırla
+                    } else {
+                        // Boştu, eklendi -> Dolu kalp yap
+                        icon.classList.remove('bi-heart');
+                        icon.classList.add('bi-heart-fill');
+                        icon.style.color = 'red';
+                    }
                 alert(data.message);
             } else {
                 alert(data.message);

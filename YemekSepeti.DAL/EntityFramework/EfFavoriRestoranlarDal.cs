@@ -16,6 +16,7 @@ namespace YemekSepeti.DAL.EntityFramework
         public EfFavoriRestoranlarDal(YemekSepetiDbContext context) : base(context)
         {
         }
+        //Favoriye özel metodlar
         public void FavoriEkle(int kullaniciId, int restoranId)
         {
             var p1 = new SqlParameter("@KullaniciID", kullaniciId);
@@ -31,7 +32,7 @@ namespace YemekSepeti.DAL.EntityFramework
         {
             var p1 = new SqlParameter("@KullaniciID", kullaniciId);
             var p2 = new SqlParameter("@RestoranID", restoranId);
-
+            //EF Core içinde SQL komutu çalıştır.
             _context.Database.ExecuteSqlRaw(
                 "EXEC up_FavoriRestoranSil @KullaniciID, @RestoranID",
                 p1, p2
