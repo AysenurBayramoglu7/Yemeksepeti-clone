@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 // EF core ile veri tabanı bağlantısı sağlıyıcaz
 using Microsoft.EntityFrameworkCore;
 using YemekSepeti.Entities;
+using YemekSepeti.Entities.Dtos;
 
 
 namespace YemekSepeti.DAL
@@ -32,7 +33,6 @@ namespace YemekSepeti.DAL
         public DbSet<SiparisDetay> SiparisDetaylari { get; set; }
         public DbSet<UrunKategori> UrunKategoriler { get; set; }
         public DbSet<FavoriRestoranlar> FavoriRestoranlar { get; set; }
-
 
 
         // YemekSepetiDbContext.cs içinde OnModelCreating metodunun sonuna ekleyin
@@ -97,6 +97,10 @@ namespace YemekSepeti.DAL
             // ❗ BURAYA EKLENİYOR
             modelBuilder.Entity<Restoran>().ToTable("Restoran");
 
+            // Trigger kullanan tabloları EF Core'a bildiriyoruz ki trigger'lar çalışsın
+            modelBuilder.Entity<SiparisDetay>().ToTable(tb => tb.HasTrigger("tr_SiparisDetay_StokDus"));
+            modelBuilder.Entity<Urun>().ToTable(tb => tb.HasTrigger("tr_Urun_StokKontrol"));
+
             // Bu satır da eklenmeli! Siparis tablosu için de aynı sorun yaşanıyordu.
             modelBuilder.Entity<Siparis>().ToTable("Siparis");
 
@@ -117,7 +121,7 @@ namespace YemekSepeti.DAL
                 new Rol { RolID = 2, RolAd = "RestoranSahibi" },
                 new Rol { RolID = 3, RolAd = "Musteri" }
             );
-            
+
             //FAVORİ AYARLARI
             modelBuilder.Entity<FavoriRestoranlar>()
                 .HasKey(fr => fr.FavoriID);
@@ -138,6 +142,11 @@ namespace YemekSepeti.DAL
                 .WithMany(r => r.FavoriKullanicilar)
                 .HasForeignKey(fr => fr.RestoranID)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // 🔹 SP DTO (Keyless Entity)
+            modelBuilder.Entity<SiparisGecmisiDto>().HasNoKey();// Keyless entity olarak tanımlanır.YAni tablo oluşturulmaz.
+            modelBuilder.Entity<SiparisDetayDto>().HasNoKey();
+
         }
     }
 }

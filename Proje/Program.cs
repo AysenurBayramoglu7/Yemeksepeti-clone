@@ -48,6 +48,10 @@ builder.Services.AddScoped<IUrunKategoriDal, EfUrunKategoriDal>();
 builder.Services.AddScoped<IFavoriRestoranlarDal, EfFavoriRestoranlarDal>();
 builder.Services.AddScoped<IFavoriRestoranlarService, FavoriRestoranlarManager>();
 
+// Siparis
+builder.Services.AddScoped<ISiparisDal, EfSiparisDal>();
+builder.Services.AddScoped<ISiparisService, SiparisManager>();
+
 
 
 builder.Services.AddSession(options =>

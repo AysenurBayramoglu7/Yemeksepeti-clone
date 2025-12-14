@@ -37,7 +37,14 @@
                             @item.UrunAd
                         </td>
                         <td>@item.Fiyat.ToString("C2")</td>
-                        <td>@item.Adet</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                            @* Stok kontrolü için *@
+                                <a href="@Url.Action("Guncelle", "Sepet", new { urunId = item.UrunId, adet = -1 })" class="btn btn-sm btn-outline-secondary me-2">-</a>
+                                <span class="fw-bold">@item.Adet</span>
+                                <a href="@Url.Action("Guncelle", "Sepet", new { urunId = item.UrunId, adet = 1 })" class="btn btn-sm btn-outline-secondary ms-2">+</a>
+                            </div>
+                        </td>
                         <td>@item.Toplam.ToString("C2")</td>
                         <td>
                             <form asp-action="Sil" asp-controller="Sepet" method="post">
@@ -61,7 +68,7 @@
 
         <div class="d-flex justify-content-end">
             <a href="@Url.Action("Temizle", "Sepet")" class="btn btn-outline-secondary me-2">Sepeti Temizle</a>
-            <button class="btn btn-success">Siparişi Tamamla (Yakında)</button>
+            <a href="@Url.Action("Tamamla", "Sepet")" class="btn btn-success">Siparişi Tamamla</a>
         </div>
     }
 </div>

@@ -33,6 +33,13 @@
                     <span asp-validation-for="Fiyat" class="text-danger"></span>
                 </div>
 
+                @* Stok  *@
+                <div class="mb-3">
+                    <label asp-for="Stok" class="form-label">Stok Adedi</label>
+                    <input asp-for="Stok" class="form-control" />
+                    <span asp-validation-for="Stok" class="text-danger"></span>
+                </div>
+
                 @* Restoran Seçimi *@
                 <div class="mb-3">
                     <label asp-for="RestoranID" class="form-label">Restoran</label>
@@ -52,6 +59,9 @@
                     <input asp-for="AktifMi" class="form-check-input" type="checkbox" />
                     <label class="form-check-label" asp-for="AktifMi">Aktif Mi?</label>
                 </div>
+
+                @* Fotoğraf URL (Değişmemesi için Gizli Tutuluyor) *@
+                <input type="hidden" asp-for="FotoUrl" />
 
                 <div class="mb-3">
                     <button type="submit" class="btn btn-success">

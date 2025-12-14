@@ -68,12 +68,25 @@ namespace YemekSepeti.WebUI.Controllers
         // KullaniciController.cs içinde
 
         [HttpPost]
-        public async Task<IActionResult> GirisYap(string email,string sifre)
+        public async Task<IActionResult> GirisYap(string email, string sifre, string? returnUrl = null)
         {
-            var kullanici = _kullaniciService.TLogin(email, sifre);
+            Kullanici? kullanici = null;
+            try
+            {
+                kullanici = _kullaniciService.TLogin(email, sifre);
+            }
+            catch (Exception ex)
+            {
+                // Hata mesajını yakala ve kullanıcıya göster
+                ModelState.AddModelError("", "Giriş başarısız: " + ex.Message);
+                ViewData["ReturnUrl"] = returnUrl; 
+                return View();
+            }
+
             if (kullanici == null)
             {
                 ModelState.AddModelError("", "Geçersiz email veya şifre.");
+                ViewData["ReturnUrl"] = returnUrl;
                 return View();
             }
 
@@ -94,6 +107,11 @@ namespace YemekSepeti.WebUI.Controllers
             // Kullanıcıyı cookie ile kimlik doğrulama sistemi içine al
             //Bu Claim listesi kullanıcının tarayıcısına cookie olarak yazılıyor:
             await HttpContext.SignInAsync("Cookies", principal);
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                 return Redirect(returnUrl);
+            }
 
             // Rol bazlı yönlendirme (isteğe bağlı)
             if (kullanici.Rol != null && kullanici.Rol.RolAd == "Admin")

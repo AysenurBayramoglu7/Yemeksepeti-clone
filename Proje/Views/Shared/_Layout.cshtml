@@ -67,30 +67,7 @@
                                 </a>
                             </li>
 
-                            <!-- Sepet -->
-                            <li class="nav-item">
-                                <a class="nav-link text-dark position-relative" asp-controller="Sepet" asp-action="Index" title="Sepetim">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-bag" viewBox="0 0 16 16">
-                                      <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z"/>
-                                    </svg>
-                                    @{
-                                        var sepet = Context.Session.GetJson<SepetViewModel>("Sepet");
-                                        var adet = sepet?.ToplamAdet ?? 0;
-                                    }
-                                    @if (adet > 0)
-                                    {
-                                        <span id="cartCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
-                                            @adet
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                         <span id="cartCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem; display:none;">
-                                            0
-                                        </span>
-                                    }
-                                </a>
-                            </li>
+
                         }
                         else
                         {
@@ -105,6 +82,31 @@
                             </li>
                         }
 
+
+                        <!-- Sepet (Herkes için görünür) -->
+                        <li class="nav-item ms-3">
+                            <a class="nav-link text-dark position-relative" asp-controller="Sepet" asp-action="Index" title="Sepetim">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-bag" viewBox="0 0 16 16">
+                                    <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z"/>
+                                </svg>
+                                @{
+                                    var sepet = Context.Session.GetJson<SepetViewModel>("Sepet");
+                                    var adet = sepet?.ToplamAdet ?? 0;
+                                }
+                                @if (adet > 0)
+                                {
+                                    <span id="cartCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+                                        @adet
+                                    </span>
+                                }
+                                else
+                                {
+                                        <span id="cartCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem; display:none;">
+                                        0
+                                    </span>
+                                }
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>

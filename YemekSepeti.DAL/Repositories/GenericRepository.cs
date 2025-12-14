@@ -46,8 +46,7 @@ namespace YemekSepeti.DAL.Repositories
 
         public void Insert(T entity)
         {
-            var addEntity= _context.Entry(entity);
-            addEntity.State = EntityState.Added;
+            _dbSet.Add(entity);
             _context.SaveChanges();
         }
 

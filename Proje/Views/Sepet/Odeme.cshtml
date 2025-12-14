@@ -1,0 +1,102 @@
+@model YemekSepeti.WebUI.Models.OdemeViewModel
+
+@{
+    ViewData["Title"] = "Ödeme ve Onay";
+    Layout = "_Layout";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Sol taraf: Sipariş Özeti -->
+        <div class="col-md-5 order-md-2 mb-4">
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-primary">Sipariş Özeti</span>
+                <span class="badge bg-primary rounded-pill">@Model.Sepet.ToplamAdet</span>
+            </h4>
+            <ul class="list-group mb-3 shadow-sm">
+                @foreach (var item in Model.Sepet.SepetItems)
+                {
+                    <li class="list-group-item d-flex justify-content-between lh-sm">
+                        <div>
+                            <h6 class="my-0">@item.UrunAd</h6>
+                            <small class="text-muted">@item.Adet Adet x @item.Fiyat.ToString("C2")</small>
+                        </div>
+                        <span class="text-muted">@item.Toplam.ToString("C2")</span>
+                    </li>
+                }
+                <li class="list-group-item d-flex justify-content-between bg-light fw-bold">
+                    <span class="text-dark">Toplam (TL)</span>
+                    <span class="text-dark">@Model.Sepet.GenelToplam.ToString("C2")</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Sağ Taraf: Adres ve Ödeme Bilgileri -->
+        <div class="col-md-7 order-md-1">
+            <h4 class="mb-3">Teslimat ve Ödeme</h4>
+            
+            @if (ViewData["Hata"] != null)
+            {
+                <div class="alert alert-danger">
+                    @ViewData["Hata"]
+                </div>
+            }
+
+            <form asp-action="OdemeOnayla" asp-controller="Sepet" method="post" class="needs-validation" novalidate>
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Teslimat Adresi</h5>
+                        <div class="mb-3">
+                            <label asp-for="TeslimatAdresi" class="form-label"></label>
+                            <textarea asp-for="TeslimatAdresi" class="form-control" rows="3" placeholder="Açık adresinizi giriniz..."></textarea>
+                            <span asp-validation-for="TeslimatAdresi" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Kart Bilgileri</h5>
+                        <div class="alert alert-info py-2 small">
+                            <i class="bi bi-info-circle"></i> Bu bir demo projesidir. Lütfen gerçek kart bilgilerinizi girmeyiniz.
+                        </div>
+
+                        <div class="row gy-3">
+                            <div class="col-md-6">
+                                <label asp-for="KartSahibi" class="form-label"></label>
+                                <input asp-for="KartSahibi" type="text" class="form-control" placeholder="Ad Soyad" />
+                                <span asp-validation-for="KartSahibi" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="KartNumarasi" class="form-label"></label>
+                                <input asp-for="KartNumarasi" type="text" class="form-control" placeholder="0000 0000 0000 0000" />
+                                <span asp-validation-for="KartNumarasi" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="SonKullanmaTarihi" class="form-label"></label>
+                                <input asp-for="SonKullanmaTarihi" type="text" class="form-control" placeholder="MM/YY" />
+                                <span asp-validation-for="SonKullanmaTarihi" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label asp-for="CVC" class="form-label"></label>
+                                <input asp-for="CVC" type="text" class="form-control" placeholder="123" />
+                                <span asp-validation-for="CVC" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="w-100 btn btn-success btn-lg py-3 fw-bold" type="submit">
+                    <i class="bi bi-check-circle-fill me-2"></i>Siparişi Onayla ve Bitir
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -33,20 +33,10 @@ else
                             <div class="d-flex justify-content-between">
                                 <strong>@u.Fiyat TL</strong>
 
-                                @if (User.Identity.IsAuthenticated)
-                                {
                                     <button class="btn btn-primary btn-sm" onclick="sepeteEkle(@u.UrunId)">
                                         <i class="bi bi-plus"></i>
                                         Ekle
                                     </button>
-                                }
-                                else
-                                {
-                                    <a class="btn btn-primary btn-sm" asp-controller="Kullanici" asp-action="GirisYap">
-                                        <i class="bi bi-plus"></i>
-                                        Ekle
-                                    </a>
-                                }
                             </div>
                         </div>
                     </div>
