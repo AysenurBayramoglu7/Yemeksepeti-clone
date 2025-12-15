@@ -13,9 +13,9 @@ namespace YemekSepeti.DAL
 {   // Veri tabanına yansıtılmak istenen tüm sınıflar burda olucak
     public class YemekSepetiDbContext : DbContext
     {
-        public YemekSepetiDbContext()
+        /*public YemekSepetiDbContext()
         {
-        }
+        }*/
 
         public YemekSepetiDbContext(DbContextOptions<YemekSepetiDbContext> options) : base(options)
         {

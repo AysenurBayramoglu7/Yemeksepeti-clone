@@ -64,11 +64,11 @@ builder.Services.AddSession(options =>
 var app = builder.Build();
 
 // Veritabanı migrasyonlarını başlangıçta otomatik olarak uygula
-using (var scope = app.Services.CreateScope())
+/*using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<YemekSepetiDbContext>();
     dbContext.Database.Migrate();
-}
+}*/
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
