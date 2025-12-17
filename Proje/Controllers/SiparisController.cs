@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
 using System.Security.Claims;
 using YemekSepeti.BLL.Abstract;
-using System.Linq;
 using YemekSepeti.Entities.Dtos;
-using System;
+using YemekSepeti.WebUI.Models;
 
 namespace YemekSepeti.WebUI.Controllers
 {
@@ -25,44 +26,59 @@ namespace YemekSepeti.WebUI.Controllers
             if (!int.TryParse(userIdStr, out int userId))
                 return RedirectToAction("Index", "Home");
 
-            // SP Call
-            var siparisler = _siparisService.KullaniciSiparisGecmisiGetir(userId);
+            // 1. Kullanıcının tüm siparişlerini çek
+            var siparisler = _siparisService.KullaniciSiparisGecmisiGetir(userId)
+                                            .OrderByDescending(x => x.Tarih)
+                                            .ToList();
 
-            return View(siparisler);
+            // 2. Modeli doldur
+            var modelListesi = new List<SiparisListesiViewModel>();
+
+            foreach (var s in siparisler)
+            {
+                // Her sipariş için detayları al
+                var spDenGelenDetay = _siparisService.SiparisDetayGetir(s.SiparisID);
+
+                modelListesi.Add(new SiparisListesiViewModel
+                {
+                    Siparis = s,
+                    Detaylar = spDenGelenDetay
+                });
+            }
+
+            return View(modelListesi);
         }
 
-        // Sipariş detaylarını getirir. AJAX çağrısı için kullanılır.
+        // MÜŞTERİ İÇİN SİPARİŞ DETAY SAYFASI
         [HttpGet]
-        public IActionResult DetayGetir(int siparisId)
+        public IActionResult Detay(int id)
         {
-            Console.WriteLine("---------------------------------------------");
-            Console.WriteLine("DEBUG /Siparis/DetayGetir CALLED");
-            Console.WriteLine("SiparisID: " + siparisId);
+            // 1. Giriş yapan kullanıcıyı bul
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdStr, out int userId)) return RedirectToAction("GirisYap", "Kullanici");
 
-            if (siparisId <= 0)
+            // 2. Kullanıcının tüm siparişlerini çek
+            var siparisler = _siparisService.KullaniciSiparisGecmisiGetir(userId)
+                                            .OrderByDescending(x => x.Tarih)
+                                            .ToList();
+
+            // 3. Modeli doldur (SP ile detayları çekerek)
+            var modelListesi = new List<SiparisListesiViewModel>();
+
+            foreach (var s in siparisler)
             {
-                 Console.WriteLine("ERROR: Invalid ID");
-                 return BadRequest();
+                // BURASI KRİTİK: Her sipariş için SP'ye gidip detayları alıyoruz
+                var spDenGelenDetay = _siparisService.SiparisDetayGetir(s.SiparisID);
+
+                modelListesi.Add(new SiparisListesiViewModel
+                {
+                    Siparis = s,       // Ana veri
+                    Detaylar = spDenGelenDetay // SP'den gelen detay verisi
+                });
             }
 
-            try
-            {
-                var detaylar = _siparisService.SiparisDetayGetir(siparisId);
-                Console.WriteLine($"Service Returned Data. Count: {(detaylar != null ? detaylar.Count : 0)}");
-                
-                if(detaylar != null) {
-                    foreach(var d in detaylar) {
-                        Console.WriteLine($"Item: {d.UrunAd} - {d.Adet} - {d.Fiyat}");
-                    }
-                }
-                
-                return Json(detaylar);
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine("EXCEPTION in Controller: " + ex.Message);
-                return BadRequest("Server Error: " + ex.Message);
-            }
+            // 4. Dolu paketi View'a gönder
+            return View(modelListesi);
         }
     }
 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using YemekSepeti.BLL.Abstract;
 using YemekSepeti.DAL.Abstract;
+using YemekSepeti.DAL.EntityFramework;
 using YemekSepeti.Entities;
 using YemekSepeti.Entities.Dtos;
 
@@ -14,10 +15,12 @@ namespace YemekSepeti.BLL.Concrete
     public class SiparisManager : ISiparisService
     {
         private readonly ISiparisDal _siparisDal;
+        private readonly IRestoranDal _restoranDal;
 
-        public SiparisManager(ISiparisDal siparisDal)
+        public SiparisManager(ISiparisDal siparisDal, IRestoranDal restoranDal)
         {
             _siparisDal = siparisDal;
+            _restoranDal = restoranDal;
         }
 
         public void TDelete(Siparis t)
@@ -52,6 +55,44 @@ namespace YemekSepeti.BLL.Concrete
         {
             return _siparisDal.SiparisDetayGetir(siparisId);
         }
+
+        public void SiparisDurumGuncelle(
+            int siparisId,
+            SiparisDurumu yeniDurum,
+            int restoranSahibiKullaniciId)
+        {
+            // 1. Siparişi bul
+            var siparis = _siparisDal.Get(x => x.SiparisID == siparisId);
+
+            if (siparis == null)
+                throw new Exception("Sipariş bulunamadı.");
+
+            // 2. Sipariş bu restoran sahibine mi ait?
+            // (RestoranID → Restoran → KullaniciID)
+            var restoran = _restoranDal.Get(x =>
+                x.RestoranID == siparis.RestoranID &&
+                x.KullaniciID == restoranSahibiKullaniciId);
+
+            if (restoran == null)
+                throw new Exception("Bu sipariş üzerinde işlem yapma yetkiniz yok.");
+
+            // 3. Durum geçişi kontrolü
+            var mevcutDurum = (SiparisDurumu)siparis.Durum;
+
+            bool gecerliGecis = (mevcutDurum == SiparisDurumu.OnayBekliyor &&yeniDurum == SiparisDurumu.Hazirlaniyor)
+            || (mevcutDurum == SiparisDurumu.OnayBekliyor &&yeniDurum == SiparisDurumu.IptalEdildi)
+            || (mevcutDurum == SiparisDurumu.Hazirlaniyor && yeniDurum == SiparisDurumu.Yolda)
+            || (mevcutDurum == SiparisDurumu.Yolda && yeniDurum == SiparisDurumu.TeslimEdildi);
+
+            if (!gecerliGecis)
+                throw new Exception("Bu durum geçişi yapılamaz.");
+
+            // 4. Güncelle
+            siparis.Durum = yeniDurum;
+            _siparisDal.Update(siparis);
+
+        }
+
 
     }
 }

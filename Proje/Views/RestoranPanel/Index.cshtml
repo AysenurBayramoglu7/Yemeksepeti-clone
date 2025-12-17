@@ -1,0 +1,122 @@
+﻿@using YemekSepeti.Entities
+@model List<Siparis>
+
+@{
+    Layout = "~/Views/Shared/_RestoranLayout.cshtml";
+    ViewData["Title"] = "Gelen Siparisler";
+}
+
+<div class="container-fluid">
+
+    <h3 class="mb-4">🧾 Gelen Siparişler </h3>
+
+    @if (TempData["Basarili"] != null)
+    {
+        <div class="alert alert-success">@TempData["Basarili"]</div>
+    }
+
+    @if (TempData["Hata"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Hata"]</div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info">
+                    Henüz size ait bir sipariş bulunmamaktadır.
+                </div>
+            }
+            else
+            {
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Tarih</th>
+                            <th>Tutar</th>
+                            <th>Durum</th>
+                            <th style="width:260px">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            var durum = item.Durum;
+
+                            <tr>
+                                <td>#@item.SiparisID</td>
+                                <td>@item.Tarih.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>@item.ToplamTutar ₺</td>
+
+                                <td>
+                                    <span class="badge
+                                                @(durum == SiparisDurumu.OnayBekliyor ? "bg-warning text-dark" :
+                                                                                    durum == SiparisDurumu.Hazirlaniyor ? "bg-info" :
+                                                                                    durum == SiparisDurumu.Yolda ? "bg-primary" :
+                                                                                    durum == SiparisDurumu.TeslimEdildi ? "bg-success" :
+                                                                                    "bg-danger")">
+                                @durum
+                            </span>
+                        </td>
+
+                                <td>
+                                    <form asp-action="DurumGuncelle"
+                                          asp-controller="RestoranPanel"
+                                          method="post"
+                                          class="d-flex gap-2">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden" name="siparisId" value="@item.SiparisID" />
+                                        @*<select name="yeniDurum" class="form-select form-select-sm" style="width:150px">
+                                            <option value="0" selected="@(durum == SiparisDurumu.OnayBekliyor)">Onay Bekliyor</option>
+                                            <option value="1" selected="@(durum == SiparisDurumu.Hazirlaniyor)">Hazırlanıyor</option>
+                                            <option value="2" selected="@(durum == SiparisDurumu.Yolda)">Yolda</option>
+                                            <option value="3" selected="@(durum == SiparisDurumu.TeslimEdildi)">Teslim Edildi</option>
+                                            <option value="4" selected="@(durum == SiparisDurumu.IptalEdildi)">İptal Edildi</option>
+                                        </select>*@
+
+                                        <!-- YENİ KOD (bunu yaz): -->
+                                        <select name="yeniDurum" class="form-select form-select-sm" style="width:150px">
+                                    @if (durum == SiparisDurumu.OnayBekliyor)
+                                            {
+                                                <option value="1">Hazırlanıyor (Kabul Et)</option>
+                                                <option value="4">İptal Edildi (Reddet)</option>
+                                            }
+                                            else if (durum == SiparisDurumu.Hazirlaniyor)
+                                            {
+                                                <option value="2">Yolda (Kuryeye Ver)</option>
+                                            }
+                                            else if (durum == SiparisDurumu.Yolda)
+                                            {
+                                                <option value="3">Teslim Edildi (Teslim Et)</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@((int)durum)" selected>@durum (Son Durum)</option>
+                                            }
+                                        </select>
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-primary"
+                                                @(durum == SiparisDurumu.TeslimEdildi || durum == SiparisDurumu.IptalEdildi ? "disabled" : "")>
+                                            Güncelle
+                                        </button>
+
+                                        <a asp-action="SiparisDetay" asp-route-id="@item.SiparisID" class="btn btn-sm btn-info text-white">
+                                            Detay
+                                        </a>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+
+        </div>
+    </div>
+</div>

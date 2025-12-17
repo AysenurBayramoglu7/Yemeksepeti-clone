@@ -215,7 +215,7 @@ namespace YemekSepeti.WebUI.Controllers
                     ToplamTutar = sepet.GenelToplam,
                     Tarih = DateTime.Now,
                     TeslimatAdresi = model.TeslimatAdresi, // Kullanıcının girdiği adres
-                    Durum = YemekSepeti.Entities.SiparisDurumu.Hazirlaniyor,
+                    Durum = YemekSepeti.Entities.SiparisDurumu.OnayBekliyor,
                     TakipKodu = Guid.NewGuid().ToString().Substring(0, 8).ToUpper()
                 };
 

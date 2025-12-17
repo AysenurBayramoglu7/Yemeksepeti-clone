@@ -25,7 +25,7 @@ namespace YemekSepeti.Entities
         [Required]
         [MaxLength(20)]
         public string TakipKodu { get; set; } = string.Empty; // Takip kodu
-        public SiparisDurumu Durum { get; set; } = SiparisDurumu.Hazirlaniyor;
+        public SiparisDurumu Durum { get; set; } = SiparisDurumu.OnayBekliyor;
         //public virtual ICollection<SiparisDetay> SiparisDetaylar { get; set; }
         public virtual ICollection<SiparisDetay> SiparisDetaylar { get; set; } = new HashSet<SiparisDetay>();
 

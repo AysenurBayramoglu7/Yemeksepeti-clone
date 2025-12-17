@@ -34,6 +34,9 @@ namespace YemekSepeti.DAL
         public DbSet<UrunKategori> UrunKategoriler { get; set; }
         public DbSet<FavoriRestoranlar> FavoriRestoranlar { get; set; }
 
+        public DbSet<SiparisDetayDto> SiparisDetayDtos { get; set; }
+        public DbSet<SiparisGecmisiDto> SiparisGecmisiDtos { get; set; } // Bunu da ekle
+
 
         // YemekSepetiDbContext.cs içinde OnModelCreating metodunun sonuna ekleyin
 
@@ -98,6 +101,9 @@ namespace YemekSepeti.DAL
             modelBuilder.Entity<Restoran>().ToTable("Restoran");
 
             // Trigger kullanan tabloları EF Core'a bildiriyoruz ki trigger'lar çalışsın
+            //YENİ EKLENDİİİİİ
+            // SiparisDetay tablosunun adını belirt (Hata Çözümü)
+            modelBuilder.Entity<SiparisDetay>().ToTable("SiparisDetaylari");
             modelBuilder.Entity<SiparisDetay>().ToTable(tb => tb.HasTrigger("tr_SiparisDetay_StokDus"));
             modelBuilder.Entity<Urun>().ToTable(tb => tb.HasTrigger("tr_Urun_StokKontrol"));
 
@@ -142,7 +148,7 @@ namespace YemekSepeti.DAL
                 .WithMany(r => r.FavoriKullanicilar)
                 .HasForeignKey(fr => fr.RestoranID)
                 .OnDelete(DeleteBehavior.Restrict);
-
+           
             // 🔹 SP DTO (Keyless Entity)
             modelBuilder.Entity<SiparisGecmisiDto>().HasNoKey();// Keyless entity olarak tanımlanır.YAni tablo oluşturulmaz.
             modelBuilder.Entity<SiparisDetayDto>().HasNoKey();

@@ -1,0 +1,113 @@
+﻿@using YemekSepeti.Entities
+@model YemekSepeti.WebUI.Models.RestoranSiparisDetayViewModel
+
+@{
+    Layout = "~/Views/Shared/_RestoranLayout.cshtml";
+    ViewData["Title"] = "Sipariş Detayı";
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>🧾 Sipariş #@Model.Siparis.SiparisID Detayı</h3>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Listeye Dön
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-dark text-white">Müşteri Bilgileri</div>
+                <div class="card-body">
+                    <p><strong>Tarih:</strong> @Model.Siparis.Tarih.ToString("dd.MM.yyyy HH:mm")</p>
+                    <p><strong>Toplam Tutar:</strong> <span class="text-success fw-bold">@Model.Siparis.ToplamTutar ₺</span></p>
+                    <hr />
+                    <h6>Teslimat Adresi:</h6>
+                    <p>@Model.Siparis.TeslimatAdresi</p>
+                    
+                    <hr />
+                    <h6>Durum İşlemleri:</h6>
+                    <div class="d-grid gap-2">
+                        @{
+                            var durum = Model.Siparis.Durum;
+                        }
+
+                        @if (durum == SiparisDurumu.OnayBekliyor)
+                        {
+                            <form asp-action="DurumGuncelle" method="post">
+                                <input type="hidden" name="siparisId" value="@Model.Siparis.SiparisID" />
+                                <input type="hidden" name="yeniDurum" value="1" /> <!-- Hazırlanıyor -->
+                                <button type="submit" class="btn btn-success w-100 mb-2">✅ Siparişi Onayla</button>
+                            </form>
+                            <form asp-action="DurumGuncelle" method="post">
+                                <input type="hidden" name="siparisId" value="@Model.Siparis.SiparisID" />
+                                <input type="hidden" name="yeniDurum" value="4" /> <!-- İptal -->
+                                <button type="submit" class="btn btn-danger w-100">❌ Reddet</button>
+                            </form>
+                        }
+                        else if (durum == SiparisDurumu.Hazirlaniyor)
+                        {
+                            <form asp-action="DurumGuncelle" method="post">
+                                <input type="hidden" name="siparisId" value="@Model.Siparis.SiparisID" />
+                                <input type="hidden" name="yeniDurum" value="2" /> <!-- Yolda -->
+                                <button type="submit" class="btn btn-primary w-100">🛵 Yola Çıkar</button>
+                            </form>
+                        }
+                        else if (durum == SiparisDurumu.Yolda)
+                        {
+                            <form asp-action="DurumGuncelle" method="post">
+                                <input type="hidden" name="siparisId" value="@Model.Siparis.SiparisID" />
+                                <input type="hidden" name="yeniDurum" value="3" /> <!-- Teslim Edildi -->
+                                <button type="submit" class="btn btn-success w-100">🏁 Teslim Et</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <div class="alert alert-secondary text-center mb-0">
+                                Sipariş Tamamlandı: <strong>@durum</strong>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">Sipariş İçeriği</div>
+                <div class="card-body p-0">
+                    <table class="table table-striped mb-0">
+                        <thead>
+                            <tr>
+                                <th>Ürün Adı</th>
+                                <th>Adet</th>
+                                <th>Fiyat</th>
+                                <th>Toplam</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @* Burası SiparisDetaylari tablosundan gelen veriyi döker *@
+                            @if (Model.Urunler != null && Model.Urunler.Count > 0)
+                            {
+                                foreach (var urun in Model.Urunler)
+                                {
+                                    <tr>
+                                        <td>@urun.UrunAd</td>
+                                        <td>x @urun.Adet</td>
+                                        <td>@urun.Fiyat ₺</td>
+                                        <td class="fw-bold">@urun.SatirToplam ₺</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="4" class="text-center text-danger">Ürün detayı bulunamadı!</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

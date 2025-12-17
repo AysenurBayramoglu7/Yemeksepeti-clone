@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,13 +29,18 @@ namespace YemekSepeti.DAL.EntityFramework
                 )
                 .ToList();
         }
+
         public List<SiparisDetayDto> SiparisDetayGetir(int siparisId)
         {
-            var param = new SqlParameter("@SiparisID", siparisId);
+            // 1. Parametreyi hazırla
+            var pSiparisID = new SqlParameter("@SiparisID", siparisId);
 
+            // 2. SP'yi çalıştır (FromSqlRaw ile)
+            // Bu kod veritabanına gider, SP'yi çalıştırır ve sonucu DTO listesine çevirir.
             return _context.Set<SiparisDetayDto>()
-                .FromSqlRaw("EXEC up_SiparisDetayGetir @SiparisID", param)
-                .ToList();
+                           .FromSqlRaw("EXEC up_SiparisDetayGetir @SiparisID", pSiparisID)
+                           .AsEnumerable() // Veriyi çekmek için
+                           .ToList();
         }
     }
 }
