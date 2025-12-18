@@ -1,0 +1,69 @@
+﻿@model List<YemekSepeti.Entities.Dtos.UrunSatisRaporDto>
+@{
+    ViewData["Title"] = "Rapor";
+    Layout = "~/Views/Shared/_RestoranLayout.cshtml";
+}
+
+<div class="container mt-3">
+
+    <h3 class="mb-3">📊 Satış Raporu</h3>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="text-muted">Toplam Kazanç (Teslim Edilen)</div>
+                    <div class="fs-3 fw-bold">@(((decimal)ViewBag.ToplamKazanc).ToString("N2")) ₺</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="text-muted">Teslim Edilen Sipariş Sayısı</div>
+                    <div class="fs-3 fw-bold">@ViewBag.TeslimSiparisSayisi</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header fw-bold">Ürün Bazlı Satış Özeti</div>
+        <div class="card-body p-0">
+            <table class="table table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Ürün</th>
+                        <th>Kaç Siparişte Geçti</th>
+                        <th>Toplam Satılan Adet</th>
+                        <th>Ürün Bazlı Kazanç</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.UrunAd</td>
+                                <td>@item.SiparisFrekansi</td>
+                                <td>@item.ToplamSatilanAdet</td>
+                                <td>@item.UrunBazliKazanc.ToString("N2") ₺</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center p-3">
+                                Henüz teslim edilmiş sipariş yok.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

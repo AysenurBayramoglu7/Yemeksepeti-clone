@@ -35,7 +35,9 @@ namespace YemekSepeti.DAL
         public DbSet<FavoriRestoranlar> FavoriRestoranlar { get; set; }
 
         public DbSet<SiparisDetayDto> SiparisDetayDtos { get; set; }
-        public DbSet<SiparisGecmisiDto> SiparisGecmisiDtos { get; set; } // Bunu da ekle
+        public DbSet<SiparisGecmisiDto> SiparisGecmisiDtos { get; set; } 
+        public DbSet<UrunSatisRaporDto> UrunSatisRaporDtos { get; set; }
+
 
 
         // YemekSepetiDbContext.cs içinde OnModelCreating metodunun sonuna ekleyin
@@ -107,6 +109,10 @@ namespace YemekSepeti.DAL
             modelBuilder.Entity<SiparisDetay>().ToTable(tb => tb.HasTrigger("tr_SiparisDetay_StokDus"));
             modelBuilder.Entity<Urun>().ToTable(tb => tb.HasTrigger("tr_Urun_StokKontrol"));
 
+            // Yorum tablosu için Trigger Bildirimi (HATA ÇÖZÜMÜ)
+            modelBuilder.Entity<Yorum>().ToTable("Yorumlar"); // Tablo adını da garantiye alalım
+            modelBuilder.Entity<Yorum>().ToTable(tb => tb.HasTrigger("trg_RestoranPuanGuncelle")); // Trigger olduğu için bunu eklemeliyiz.
+
             // Bu satır da eklenmeli! Siparis tablosu için de aynı sorun yaşanıyordu.
             modelBuilder.Entity<Siparis>().ToTable("Siparis");
 
@@ -152,6 +158,8 @@ namespace YemekSepeti.DAL
             // 🔹 SP DTO (Keyless Entity)
             modelBuilder.Entity<SiparisGecmisiDto>().HasNoKey();// Keyless entity olarak tanımlanır.YAni tablo oluşturulmaz.
             modelBuilder.Entity<SiparisDetayDto>().HasNoKey();
+            modelBuilder.Entity<UrunSatisRaporDto>().HasNoKey();
+
 
         }
     }

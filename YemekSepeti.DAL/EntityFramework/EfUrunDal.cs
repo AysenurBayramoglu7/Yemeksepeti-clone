@@ -13,7 +13,6 @@ namespace YemekSepeti.DAL.EntityFramework
 {
     public class EfUrunDal : GenericRepository<Urun>, IUrunDal
     {
-        private readonly YemekSepetiDbContext _context;
         //Repository'nin görevi:
         //SQL yazmadan veritabanı işlemlerini yapabilmek
         //SP çalıştırmak
@@ -22,7 +21,6 @@ namespace YemekSepeti.DAL.EntityFramework
         //Tüm bu işlemler için DbContext’e erişmek zorundayız.
         public EfUrunDal(YemekSepetiDbContext context) : base(context)
         {
-            _context = context;
         }
 
         public List<Urun> GetUrunlerByRestoranSP(int restoranId)

@@ -45,6 +45,70 @@ else
         </div>
     }
 }
+
+<!-- MÜŞTERİ YORUMLARI BÖLÜMÜ -->
+<div class="mt-5">
+    <h4 class="mb-4">
+        <i class="bi bi-chat-left-quote-fill text-warning"></i> Müşteri Yorumları
+        @if (Model.Yorumlar.Any())
+        {
+            <span class="badge bg-secondary ms-2">@Model.Yorumlar.Count yorum</span>
+        }
+    </h4>
+
+    @if (!Model.Yorumlar.Any())
+    {
+        <div class="alert alert-light border">
+            <i class="bi bi-info-circle"></i> Henüz bu restoran için yorum yapılmamış. İlk yorumu siz yapabilirsiniz!
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var yorum in Model.Yorumlar)
+            {
+                <div class="col-md-6 mb-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <!-- Yıldızlar -->
+                            <div class="mb-2">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= yorum.Puan)
+                                    {
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-star text-warning"></i>
+                                    }
+                                }
+                                <span class="ms-2 fw-bold">@yorum.Puan</span>
+                            </div>
+
+                            <!-- Kullanıcı Adı -->
+                            <h6 class="card-subtitle mb-2 text-primary">
+                                <i class="bi bi-person-circle"></i>
+                                @(yorum.Kullanici?.Ad ?? "Anonim") @(yorum.Kullanici?.Soyad ?? "")
+                            </h6>
+
+                            <!-- Yorum Metni -->
+                            <p class="card-text fst-italic">
+                                "@yorum.YorumMetni"
+                            </p>
+
+                            <!-- Tarih -->
+                            <small class="text-muted">
+                                <i class="bi bi-calendar3"></i> @yorum.CreatedAt.ToString("dd.MM.yyyy")
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>

@@ -1,6 +1,21 @@
 @using YemekSepeti.Entities
 @model List<YemekSepeti.WebUI.Models.SiparisListesiViewModel>
 
+@if (TempData["Basari"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill"></i> @TempData["Basari"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["Hata"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i> @TempData["Hata"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 <div class="container mt-4">
     <h2 class="mb-4">Sipariş Geçmişim</h2>
 
@@ -47,6 +62,18 @@
                                             data-bs-target="#@targetId">
                                         Detaylar <i class="bi bi-chevron-down"></i>
                                     </button>
+
+                                    @* TeslimEdildi ise Yorum Yap butonu göster *@
+                                    @if (item.Siparis.Durum == (int)SiparisDurumu.TeslimEdildi)
+                                    {
+                                        <button class="btn btn-sm btn-warning ms-1"
+                                                type="button"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#yorumModal"
+                                                onclick="yorumModalAc(@item.Siparis.SiparisID)">
+                                            <i class="bi bi-star-fill"></i> Yorum Yap
+                                        </button>
+                                    }
                                 </td>
                             </tr>
 
@@ -88,3 +115,101 @@
         </div>
     }
 </div>
+
+@* Yorum Modal - FORM İLE *@
+<div class="modal fade" id="yorumModal" tabindex="-1" aria-labelledby="yorumModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/Yorum/Ekle" method="post">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title" id="yorumModalLabel">
+                        <i class="bi bi-star-fill"></i> Yorum Yap & Puan Ver
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Gizli Inputlar -->
+                    <input type="hidden" name="siparisId" id="yorumSiparisId" />
+                    <!-- RestoranID Controller tarafında bulunacak, buradan göndermeye gerek yok -->
+                    <input type="hidden" name="puan" id="secilenPuan" value="0" />
+
+                    @* Puan Seçimi *@
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Puanınız</label>
+                        <div class="star-rating" id="starRating">
+                            <i class="bi bi-star fs-3 star-icon" data-value="1"></i>
+                            <i class="bi bi-star fs-3 star-icon" data-value="2"></i>
+                            <i class="bi bi-star fs-3 star-icon" data-value="3"></i>
+                            <i class="bi bi-star fs-3 star-icon" data-value="4"></i>
+                            <i class="bi bi-star fs-3 star-icon" data-value="5"></i>
+                        </div>
+                    </div>
+
+                    @* Yorum Metni *@
+                    <div class="mb-3">
+                        <label for="yorumMetni" class="form-label fw-bold">Yorumunuz</label>
+                        <textarea class="form-control" name="yorumMetni" id="yorumMetni" rows="4" placeholder="Deneyiminizi paylaşın..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-send"></i> Gönder
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .star-rating .star-icon {
+            cursor: pointer;
+            color: #ccc;
+            transition: color 0.2s;
+        }
+            .star-rating .star-icon:hover,
+            .star-rating .star-icon.active {
+                color: #ffc107;
+            }
+            .star-rating .star-icon.bi-star-fill {
+                color: #ffc107;
+            }
+    </style>
+    <script>
+        // Modal açılırken sadece sipariş ID set et
+        function yorumModalAc(siparisId) {
+            $('#yorumSiparisId').val(siparisId);
+            $('#secilenPuan').val(0);
+            $('#yorumMetni').val('');
+            // Yıldızları sıfırla
+            $('.star-icon').removeClass('bi-star-fill active').addClass('bi-star');
+        }
+
+        // Yıldız tıklama (Sadece görsellik ve hidden input günceller)
+        $(document).on('click', '.star-icon', function () {
+            var value = $(this).data('value');
+            $('#secilenPuan').val(value);
+
+            // Tüm yıldızları güncelle
+            $('.star-icon').each(function () {
+                if ($(this).data('value') <= value) {
+                    $(this).removeClass('bi-star').addClass('bi-star-fill active');
+                } else {
+                    $(this).removeClass('bi-star-fill active').addClass('bi-star');
+                }
+            });
+        });
+
+        // Form Submit kontrolü (Opsiyonel: Puan seçildi mi?)
+        $('form').on('submit', function (e) {
+            var puan = $('#secilenPuan').val();
+            if (puan == 0 || puan == "0") {
+                e.preventDefault();
+                alert("Lütfen bir puan seçin!");
+            }
+        });
+    </script>
+}

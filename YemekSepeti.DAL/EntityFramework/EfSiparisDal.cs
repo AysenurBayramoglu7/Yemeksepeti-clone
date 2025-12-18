@@ -11,11 +11,8 @@ namespace YemekSepeti.DAL.EntityFramework
 {
     public class EfSiparisDal : GenericRepository<Siparis>, ISiparisDal
     {
-        private readonly YemekSepetiDbContext _context;
-
         public EfSiparisDal(YemekSepetiDbContext context) : base(context)
         {
-            _context = context;
         }
 
         public List<SiparisGecmisiDto> KullaniciSiparisGecmisiGetir(int kullaniciId)

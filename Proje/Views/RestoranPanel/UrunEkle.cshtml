@@ -1,0 +1,104 @@
+@model YemekSepeti.Entities.Urun
+
+@{
+    Layout = "~/Views/Shared/_RestoranLayout.cshtml";
+    ViewData["Title"] = "Yeni Ürün Ekle";
+}
+
+<div class="container-fluid">
+    <h3 class="mb-4">➕ Yeni Ürün Ekle</h3>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <i class="fas fa-plus-circle me-2"></i> Ürün Bilgileri
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <form asp-action="UrunEkle" asp-controller="RestoranPanel" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        @* Ürün Adı *@
+                        <div class="mb-3">
+                            <label asp-for="UrunAd" class="form-label fw-bold">
+                                <i class="fas fa-tag me-1"></i> Ürün Adı <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="UrunAd" class="form-control" placeholder="Örn: Karışık Pizza" />
+                            <span asp-validation-for="UrunAd" class="text-danger"></span>
+                        </div>
+
+                        @* Açıklama *@
+                        <div class="mb-3">
+                            <label asp-for="Aciklama" class="form-label fw-bold">
+                                <i class="fas fa-align-left me-1"></i> Açıklama
+                            </label>
+                            <textarea asp-for="Aciklama" class="form-control" rows="3" 
+                                      placeholder="Ürün hakkında kısa bir açıklama yazın..."></textarea>
+                            <span asp-validation-for="Aciklama" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            @* Fiyat *@
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Fiyat" class="form-label fw-bold">
+                                    <i class="fas fa-lira-sign me-1"></i> Fiyat (₺) <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="Fiyat" class="form-control" type="number" step="0.01" min="0" 
+                                       placeholder="0.00" />
+                                <span asp-validation-for="Fiyat" class="text-danger"></span>
+                            </div>
+
+                            @* Stok *@
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Stok" class="form-label fw-bold">
+                                    <i class="fas fa-boxes me-1"></i> Stok Adedi
+                                </label>
+                                <input asp-for="Stok" class="form-control" type="number" min="0" 
+                                       placeholder="0" value="100" />
+                                <span asp-validation-for="Stok" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        @* Ürün Kategorisi *@
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-layer-group me-1"></i> Ürün Kategorisi <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="UrunKategoriID" class="form-select" asp-items="ViewBag.UrunKategorileri">
+                                <option value="">-- Kategori Seçin --</option>
+                            </select>
+                            <span asp-validation-for="UrunKategoriID" class="text-danger"></span>
+                        </div>
+
+                        @* Fotoğraf URL *@
+                        <div class="mb-3">
+                            <label asp-for="FotoUrl" class="form-label fw-bold">
+                                <i class="fas fa-image me-1"></i> Fotoğraf URL
+                            </label>
+                            <input asp-for="FotoUrl" class="form-control" placeholder="https://ornek.com/resim.jpg" />
+                            <small class="text-muted">Ürün fotoğrafının internet adresi (opsiyonel)</small>
+                        </div>
+
+                        @* Butonlar *@
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-1"></i> Kaydet
+                            </button>
+                            <a asp-action="Urunlerim" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> İptal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

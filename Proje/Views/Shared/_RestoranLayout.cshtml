@@ -85,8 +85,17 @@
                 <a asp-controller="RestoranPanel" asp-action="Index" class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
                     <i class="fas fa-list-alt me-2"></i> Gelen Siparişler
                 </a>
+                <a asp-controller="RestoranPanel" asp-action="Urunlerim" class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Action"].ToString() == "Urunlerim" || ViewContext.RouteData.Values["Action"].ToString() == "UrunEkle" || ViewContext.RouteData.Values["Action"].ToString() == "UrunDuzenle" ? "active" : "")">
+                    <i class="fas fa-hamburger me-2"></i> Ürünlerim
+                </a>
                 <a asp-controller="RestoranPanel" asp-action="Bilgilerim" class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Action"].ToString() == "Bilgilerim" ? "active" : "")">
                     <i class="fas fa-store me-2"></i> Restoran Bilgilerim
+                </a>
+                <a asp-controller="RestoranPanel" asp-action="Rapor" class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Action"].ToString() == "Rapor" ? "active" : "")">
+                    <i class="fas fa-chart-bar me-2"></i> Rapor
+                </a>
+                <a asp-controller="RestoranPanel" asp-action="Yorumlar" class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Action"].ToString() == "Yorumlar" ? "active" : "")">
+                    <i class="fas fa-comments me-2"></i> Yorumlarım
                 </a>
                  <hr class="text-white-50 mx-3">
                  <a href="/" class="list-group-item list-group-item-action">
@@ -109,13 +118,20 @@
         </div>
         <div class="offcanvas-body">
              <div class="list-group list-group-flush">
-                <a asp-controller="RestoranPanel" asp-action="Index" class="list-group-item list-group-item-action bg-dark text-white">Siparişlerim</a>
+                <a asp-controller="RestoranPanel" asp-action="Index" class="list-group-item list-group-item-action bg-dark text-white">Gelen Siparişler</a>
+                <a asp-controller="RestoranPanel" asp-action="Urunlerim" class="list-group-item list-group-item-action bg-dark text-white">Ürünlerim</a>
                 <a asp-controller="RestoranPanel" asp-action="Bilgilerim" class="list-group-item list-group-item-action bg-dark text-white">Restoran Bilgilerim</a>
+                <a asp-controller="RestoranPanel" asp-action="Rapor" class="list-group-item list-group-item-action bg-dark text-white"> 📊 Rapor </a>
+                <a asp-controller="RestoranPanel" asp-action="Yorumlar" class="list-group-item list-group-item-action bg-dark text-white"> 💬 Yorumlarım </a>
+
+
                 <a href="/" class="list-group-item list-group-item-action bg-dark text-white">Siteye Dön</a>
             </div>
         </div>
     </div>
 
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

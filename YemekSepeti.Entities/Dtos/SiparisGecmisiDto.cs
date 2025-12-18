@@ -14,7 +14,6 @@ namespace YemekSepeti.Entities.Dtos
         public string TakipKodu { get; set; } = string.Empty;
         public string TeslimatAdresi { get; set; } = string.Empty;
         // Ek bilgiler
-        public int UrunCesidiSayisi { get; set; }
         public int Durum { get; set; }
     }
 }

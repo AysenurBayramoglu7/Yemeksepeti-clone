@@ -10,5 +10,7 @@ namespace YemekSepeti.WebUI.Models
         public List<Urun> Urunler { get; set; }
         //urun kategorileri tutması için
         public List<UrunKategori> Kategoriler { get; set; }
+        // Restoran yorumları
+        public List<Yorum> Yorumlar { get; set; } = new List<Yorum>();
     }
 }

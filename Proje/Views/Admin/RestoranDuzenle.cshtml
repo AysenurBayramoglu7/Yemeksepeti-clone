@@ -58,11 +58,12 @@
                     <span asp-validation-for="OrtalamaSure" class="text-danger"></span>
                 </div>
 
-                @* Puan (Admin güncelleyebilir) 
+                @* Puan (Kimse düzenleyemez - otomatik hesaplanır)
                 <div class="mb-3">
-                    <label asp-for="Puan" class="form-label"></label>
-                    <input asp-for="Puan" class="form-control" />
+                    <label asp-for="Puan" class="form-label">Puan (0-5)</label>
+                    <input asp-for="Puan" class="form-control" type="number" step="0.1" min="0" max="5" />
                     <span asp-validation-for="Puan" class="text-danger"></span>
+                    <small class="text-muted">Müşteri değerlendirmelerine göre 0-5 arası puan</small>
                 </div>*@
                 <div class="mb-3">
                     <label class="form-label">Kategori</label>

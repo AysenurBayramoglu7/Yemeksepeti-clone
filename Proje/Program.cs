@@ -52,6 +52,15 @@ builder.Services.AddScoped<IFavoriRestoranlarService, FavoriRestoranlarManager>(
 builder.Services.AddScoped<ISiparisDal, EfSiparisDal>();
 builder.Services.AddScoped<ISiparisService, SiparisManager>();
 
+//Rapor kısmı için
+builder.Services.AddScoped<IRaporDal, EfRaporDal>();
+builder.Services.AddScoped<IRaporService, RaporManager>();
+
+// Yorum
+builder.Services.AddScoped<IYorumDal, EfYorumDal>();
+builder.Services.AddScoped<IYorumService, YorumManager>();
+
+
 
 
 builder.Services.AddSession(options =>

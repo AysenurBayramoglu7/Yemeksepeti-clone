@@ -1,0 +1,159 @@
+@model YemekSepeti.Entities.Restoran
+
+@{
+    Layout = "~/Views/Shared/_RestoranLayout.cshtml";
+    ViewData["Title"] = "Restoran Bilgilerim";
+}
+
+<div class="container-fluid">
+    <h3 class="mb-4">🏪 Restoran Bilgilerim</h3>
+
+    @if (TempData["Basarili"] != null)
+    {
+        <div class="alert alert-success">@TempData["Basarili"]</div>
+    }
+
+    @if (TempData["Hata"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Hata"]</div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <i class="fas fa-store me-2"></i> @Model.RestoranAd - Bilgi Düzenleme
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <form asp-action="Bilgilerim" asp-controller="RestoranPanel" method="post">
+                        @Html.AntiForgeryToken()
+
+                        @* Gizli alanlar - ID'leri taşı *@
+                        <input type="hidden" asp-for="RestoranID" />
+                        <input type="hidden" asp-for="KullaniciID" />
+                        <input type="hidden" asp-for="KategoriID" />
+                        <input type="hidden" asp-for="OnayliMi" />
+                        <input type="hidden" asp-for="AktifMi" />
+                        <input type="hidden" asp-for="Puan" />
+                        <input type="hidden" asp-for="RestoranResimUrl" />
+                        <input type="hidden" asp-for="CreatedAt" />
+                        <input type="hidden" asp-for="OrtalamaSure" />
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        @* Restoran Adı *@
+                        <div class="mb-3">
+                            <label asp-for="RestoranAd" class="form-label fw-bold">
+                                <i class="fas fa-utensils me-1"></i> Restoran Adı
+                            </label>
+                            <input asp-for="RestoranAd" class="form-control" placeholder="Restoran adını girin" />
+                            <span asp-validation-for="RestoranAd" class="text-danger"></span>
+                        </div>
+
+                        @* Adres *@
+                        <div class="mb-3">
+                            <label asp-for="Adres" class="form-label fw-bold">
+                                <i class="fas fa-map-marker-alt me-1"></i> Adres
+                            </label>
+                            <textarea asp-for="Adres" class="form-control" rows="3" placeholder="Restoran adresini girin"></textarea>
+                            <span asp-validation-for="Adres" class="text-danger"></span>
+                        </div>
+
+                        @* Telefon *@
+                        <div class="mb-3">
+                            <label asp-for="Telefon" class="form-label fw-bold">
+                                <i class="fas fa-phone me-1"></i> Telefon
+                            </label>
+                            <input asp-for="Telefon" class="form-control" placeholder="Örn: 0212 123 45 67" />
+                            <span asp-validation-for="Telefon" class="text-danger"></span>
+                        </div>
+
+                        @* Minimum Sipariş Tutarı *@
+                        <div class="mb-3">
+                            <label asp-for="MinSiparisTutar" class="form-label fw-bold">
+                                <i class="fas fa-lira-sign me-1"></i> Minimum Sipariş Tutarı (₺)
+                            </label>
+                            <input asp-for="MinSiparisTutar" class="form-control" type="number" step="0.01" min="0" />
+                            <span asp-validation-for="MinSiparisTutar" class="text-danger"></span>
+                            <small class="text-muted">Müşterilerin sipariş verebilmesi için minimum tutar</small>
+                        </div>
+
+                        @* Butonlar *@
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-1"></i> Kaydet
+                            </button>
+                            <a asp-action="Index" asp-controller="RestoranPanel" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Geri Dön
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                @* Sağ tarafta bilgilendirme kartı *@
+                <div class="col-md-4">
+                    <div class="card bg-light">
+                        <div class="card-header">
+                            <i class="fas fa-info-circle me-1"></i> Restoran Durumu
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2">
+                                    <strong>Onay Durumu:</strong>
+                                    @if (Model.OnayliMi)
+                                    {
+                                        <span class="badge bg-success">Onaylı</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">Onay Bekliyor</span>
+                                    }
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Aktiflik:</strong>
+                                    @if (Model.AktifMi)
+                                    {
+                                        <span class="badge bg-success">Aktif</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Pasif</span>
+                                    }
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Puan:</strong>
+                                    @if (Model.Puan.HasValue)
+                                    {
+                                        <span class="text-warning">
+                                            <i class="fas fa-star"></i> @Model.Puan.Value.ToString("0.0")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Henüz puan yok</span>
+                                    }
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Ortalama Süre:</strong>
+                                    <span>@Model.OrtalamaSure dakika</span>
+                                </li>
+                                <li>
+                                    <strong>Kayıt Tarihi:</strong>
+                                    <span>@Model.CreatedAt.ToString("dd.MM.yyyy")</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

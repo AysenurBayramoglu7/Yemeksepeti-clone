@@ -19,33 +19,47 @@ namespace YemekSepeti.WebUI.Controllers
     {
         private readonly ISiparisService _siparisService;
         private readonly IRestoranService _restoranService;
-        private readonly IKullaniciService _kullaniciService; // Kullanıcı bilgilerini teyit için
+        private readonly IKullaniciService _kullaniciService;
+        private readonly IUrunService _urunService;
+        private readonly IUrunKategoriService _urunKategoriService;
+        private readonly IRaporService _raporService;
+        private readonly IYorumService _yorumService; // EKLENDİ
+
 
         public RestoranPanelController(
             ISiparisService siparisService,
             IRestoranService restoranService,
-            IKullaniciService kullaniciService)
+            IKullaniciService kullaniciService,
+            IUrunService urunService,
+            IUrunKategoriService urunKategoriService,
+            IRaporService raporService,
+            IYorumService yorumService) // EKLENDİ
         {
             _siparisService = siparisService;
             _restoranService = restoranService;
             _kullaniciService = kullaniciService;
+            _urunService = urunService;
+            _urunKategoriService = urunKategoriService;
+            _raporService = raporService;
+            _yorumService = yorumService; // ATANDI
+        }
+
+        // Yardımcı metod: Giriş yapan kullanıcının restoranını bul
+        private Restoran? GetCurrentRestoran()
+        {
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdStr, out int userId)) return null;
+            return _restoranService.TGet(x => x.KullaniciID == userId);
         }
 
         // ----------------- PANEL ANASAYFA (SİPARİŞ LİSTESİ) -----------------
-        // AdminController'daki "RestoranListesi" mantığıyla aynı.
-        // Ama burada TÜM restoranları değil, sadece KENDİ siparişlerini listeliyor.
         public IActionResult Index()
         {
-            // 1. Giriş yapan restoran sahibini bul
-            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!int.TryParse(userIdStr, out int userId)) return RedirectToAction("GirisYap", "Kullanici");
-
-            var restoran = _restoranService.TGet(x => x.KullaniciID == userId);
+            var restoran = GetCurrentRestoran();
             if (restoran == null) return Content("HATA: Kayıtlı bir restoranınız yok.");
 
-            // 2. Siparişleri çek (RestoranID filtresiyle)
             var siparisler = _siparisService.TGetList(x => x.RestoranID == restoran.RestoranID)
-                                            .OrderByDescending(x => x.Tarih) // En yeni en üstte
+                                            .OrderByDescending(x => x.Tarih)
                                             .ToList();
 
             // 3. Admin panelindeki gibi ilişkili verileri doldurma (gerekirse)
@@ -57,54 +71,38 @@ namespace YemekSepeti.WebUI.Controllers
         }
 
         // ----------------- DURUM GÜNCELLEME (POST) -----------------
-        // AdminController'daki "RestoranOnayla" veya "RestoranDuzenle" mantığıyla aynı.
         [HttpPost]
-        [ValidateAntiForgeryToken] // Admin panelindeki güvenlik
+        [ValidateAntiForgeryToken]
         public IActionResult DurumGuncelle(int siparisId, int yeniDurum)
         {
-            // A) Enum Güvenlik Kontrolü
             if (!Enum.IsDefined(typeof(SiparisDurumu), yeniDurum))
             {
                 TempData["Hata"] = "Geçersiz sipariş durumu.";
                 return RedirectToAction(nameof(Index));
             }
 
-            // B) Kullanıcı Kontrolü
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(userIdStr, out int userId)) return RedirectToAction("GirisYap", "Kullanici");
 
             try
             {
-                // C) Servis Çağrısı (Admin panelinde _service.TUpdate çağırıyordun, burada özel metodumuzu çağırıyoruz)
-                _siparisService.SiparisDurumGuncelle(
-                    siparisId,
-                    (SiparisDurumu)yeniDurum,
-                    userId
-                );
-
+                _siparisService.SiparisDurumGuncelle(siparisId, (SiparisDurumu)yeniDurum, userId);
                 TempData["Basarili"] = "Sipariş durumu güncellendi.";
             }
             catch (Exception ex)
             {
-                // Admin panelindeki gibi hata yakalama
                 TempData["Hata"] = ex.Message;
             }
 
-            return RedirectToAction(nameof(Index)); // Admin'deki "nameof" kullanımı
+            return RedirectToAction(nameof(Index));
         }
 
         // ----------------- RESTORAN BİLGİLERİM (GET) -----------------
-        // AdminController'daki "RestoranDuzenle" ile AYNI yapı.
-        // Restoran sahibi kendi bilgilerini görüp düzenleyebilsin.
         [HttpGet]
         public IActionResult Bilgilerim()
         {
-            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            int.TryParse(userIdStr, out int userId);
-
-            var restoran = _restoranService.TGet(x => x.KullaniciID == userId);
+            var restoran = GetCurrentRestoran();
             if (restoran == null) return NotFound();
-
             return View(restoran);
         }
 
@@ -113,62 +111,234 @@ namespace YemekSepeti.WebUI.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Bilgilerim(Restoran model)
         {
-            // Admin panelindeki Validasyon mantığı
-            // Not: Restoran sahibi onay durumunu veya ID'sini değiştiremez, o yüzden dikkatli mapping yapıyoruz.
-
-            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            int.TryParse(userIdStr, out int userId);
-
-            var existing = _restoranService.TGet(x => x.KullaniciID == userId);
+            var existing = GetCurrentRestoran();
             if (existing == null) return NotFound();
 
-            // Sadece izin verilen alanları güncelliyoruz (Admin panelindeki mantık)
             existing.RestoranAd = model.RestoranAd;
             existing.Adres = model.Adres;
             existing.Telefon = model.Telefon;
             existing.MinSiparisTutar = model.MinSiparisTutar;
-            // existing.OnayliMi = model.OnayliMi; //BUNU YAPMIYORUZ! Onayı sadece Admin verir.
 
             _restoranService.TUpdate(existing);
 
             TempData["Basarili"] = "Bilgileriniz güncellendi.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Bilgilerim));
         }
 
         // ----------------- SİPARİŞ DETAY SAYFASI (GET) -----------------
         [HttpGet]
         public IActionResult SiparisDetay(int id)
         {
-            // 1. Güvenlik: Giriş yapan restoran sahibini bul
-            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!int.TryParse(userIdStr, out int userId)) return RedirectToAction("GirisYap", "Kullanici");
+            var restoran = GetCurrentRestoran();
+            if (restoran == null) return RedirectToAction("GirisYap", "Kullanici");
 
-            var restoran = _restoranService.TGet(x => x.KullaniciID == userId);
-            if (restoran == null) return RedirectToAction("Index");
-
-            // 2. Siparişin genel bilgilerini çek (Siparis Tablosu)
             var siparis = _siparisService.TGet(x => x.SiparisID == id);
 
-            // 3. GÜVENLİK KONTROLÜ: Sipariş bu restorana mı ait?
             if (siparis == null || siparis.RestoranID != restoran.RestoranID)
             {
                 TempData["Hata"] = "Sipariş bulunamadı veya görüntüleme yetkiniz yok.";
                 return RedirectToAction("Index");
             }
 
-            // 4. Siparişin İÇERİĞİNİ çek (SiparisDetaylari Tablosu)
-            // İşte burası senin veritabanındaki o tabloyu okuyan yer!
             var urunDetaylari = _siparisService.SiparisDetayGetir(id);
 
-            // 5. Kutuyu (ViewModel) doldur
             var model = new RestoranSiparisDetayViewModel
             {
                 Siparis = siparis,
                 Urunler = urunDetaylari
             };
 
-            // 6. Sayfayı aç
             return View(model);
         }
+
+        // =================== ÜRÜN YÖNETİMİ ===================
+
+        // ----------------- ÜRÜN LİSTELEME -----------------
+        public IActionResult Urunlerim()
+        {
+            var restoran = GetCurrentRestoran();
+            if (restoran == null) return RedirectToAction("GirisYap", "Kullanici");
+
+            // Sadece kendi restoranının ürünlerini getir
+            var urunler = _urunService.TGetList(x => x.RestoranID == restoran.RestoranID);
+
+            // Kategori bilgisini doldur
+            foreach (var u in urunler)
+            {
+                u.UrunKategori = _urunKategoriService.TGet(k => k.UrunKategoriID == u.UrunKategoriID);
+            }
+
+            return View(urunler);
+        }
+
+        // ----------------- ÜRÜN EKLE (GET) -----------------
+        [HttpGet]
+        public IActionResult UrunEkle()
+        {
+            var restoran = GetCurrentRestoran();
+            if (restoran == null) return RedirectToAction("GirisYap", "Kullanici");
+
+            // Ürün kategorileri dropdown
+            ViewBag.UrunKategorileri = new SelectList(
+                _urunKategoriService.TGetList(),
+                "UrunKategoriID",
+                "UrunKategoriAd"
+            );
+
+            return View();
+        }
+
+        // ----------------- ÜRÜN EKLE (POST) -----------------
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UrunEkle(Urun urun)
+        {
+            var restoran = GetCurrentRestoran();
+            if (restoran == null) return RedirectToAction("GirisYap", "Kullanici");
+
+            // RestoranID'yi otomatik ata (kullanıcı değiştiremesin)
+            urun.RestoranID = restoran.RestoranID;
+            urun.CreatedAt = DateTime.Now;
+            urun.AktifMi = true;
+
+            // ModelState'den RestoranID hatasını kaldır (biz atadık)
+            ModelState.Remove("RestoranID");
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.UrunKategorileri = new SelectList(
+                    _urunKategoriService.TGetList(),
+                    "UrunKategoriID",
+                    "UrunKategoriAd"
+                );
+                return View(urun);
+            }
+
+            _urunService.TInsert(urun);
+            TempData["Basarili"] = "Ürün başarıyla eklendi.";
+            return RedirectToAction(nameof(Urunlerim));
+        }
+
+        // ----------------- ÜRÜN DÜZENLE (GET) -----------------
+        [HttpGet]
+        public IActionResult UrunDuzenle(int id)
+        {
+            var restoran = GetCurrentRestoran();
+            if (restoran == null) return RedirectToAction("GirisYap", "Kullanici");
+
+            var urun = _urunService.TGet(x => x.UrunId == id);
+
+            // GÜVENLİK: Ürün bu restorana mı ait?
+            if (urun == null || urun.RestoranID != restoran.RestoranID)
+            {
+                TempData["Hata"] = "Ürün bulunamadı veya düzenleme yetkiniz yok.";
+                return RedirectToAction(nameof(Urunlerim));
+            }
+
+            ViewBag.UrunKategorileri = new SelectList(
+                _urunKategoriService.TGetList(),
+                "UrunKategoriID",
+                "UrunKategoriAd",
+                urun.UrunKategoriID
+            );
+
+            return View(urun);
+        }
+
+        // ----------------- ÜRÜN DÜZENLE (POST) -----------------
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UrunDuzenle(Urun urun)
+        {
+            var restoran = GetCurrentRestoran();
+            if (restoran == null) return RedirectToAction("GirisYap", "Kullanici");
+
+            // Mevcut ürünü bul
+            var existing = _urunService.TGet(x => x.UrunId == urun.UrunId);
+
+            // GÜVENLİK: Ürün bu restorana mı ait?
+            if (existing == null || existing.RestoranID != restoran.RestoranID)
+            {
+                TempData["Hata"] = "Ürün bulunamadı veya düzenleme yetkiniz yok.";
+                return RedirectToAction(nameof(Urunlerim));
+            }
+
+            // RestoranID'yi koruyoruz (kullanıcı değiştiremesin)
+            urun.RestoranID = restoran.RestoranID;
+            ModelState.Remove("RestoranID");
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.UrunKategorileri = new SelectList(
+                    _urunKategoriService.TGetList(),
+                    "UrunKategoriID",
+                    "UrunKategoriAd",
+                    urun.UrunKategoriID
+                );
+                return View(urun);
+            }
+
+            // Sadece izin verilen alanları güncelle
+            existing.UrunAd = urun.UrunAd;
+            existing.Aciklama = urun.Aciklama;
+            existing.Fiyat = urun.Fiyat;
+            existing.Stok = urun.Stok;
+            existing.UrunKategoriID = urun.UrunKategoriID;
+            existing.AktifMi = urun.AktifMi;
+            existing.FotoUrl = urun.FotoUrl;
+
+            _urunService.TUpdate(existing);
+            TempData["Basarili"] = "Ürün başarıyla güncellendi.";
+            return RedirectToAction(nameof(Urunlerim));
+        }
+
+        // ----------------- ÜRÜN SİL (SOFT DELETE) -----------------
+        public IActionResult UrunSil(int id)
+        {
+            var restoran = GetCurrentRestoran();
+            if (restoran == null) return RedirectToAction("GirisYap", "Kullanici");
+
+            var urun = _urunService.TGet(x => x.UrunId == id);
+
+            // GÜVENLİK: Ürün bu restorana mı ait?
+            if (urun == null || urun.RestoranID != restoran.RestoranID)
+            {
+                TempData["Hata"] = "Ürün bulunamadı veya silme yetkiniz yok.";
+                return RedirectToAction(nameof(Urunlerim));
+            }
+
+            urun.AktifMi = false; // SOFT DELETE
+            _urunService.TUpdate(urun);
+
+            TempData["Basarili"] = "Ürün başarıyla silindi.";
+            return RedirectToAction(nameof(Urunlerim));
+        }
+
+
+        public IActionResult Rapor()
+        {
+            var restoran = GetCurrentRestoran();
+            if (restoran == null) return RedirectToAction("GirisYap", "Kullanici");
+
+            var model = _raporService.GetUrunSatisOzeti(restoran.RestoranID)
+                .OrderByDescending(x => x.UrunBazliKazanc)
+                .ToList();
+
+            return View(model);
+        }
+
+        // ----------------- YORUMLARIM (YENİ) -----------------
+        [Authorize]
+        public IActionResult Yorumlar()
+        {
+            var restoran = GetCurrentRestoran();
+            if (restoran == null)
+                return RedirectToAction("GirisYap", "Kullanici");
+
+            var yorumlar = _yorumService.RestoranYorumlariGetir(restoran.RestoranID);
+
+            return View(yorumlar);
+        }
+
     }
 }
