@@ -34,5 +34,34 @@ namespace YemekSepeti.DAL.EntityFramework
                 .OrderByDescending(x => x.CreatedAt)
                 .ToList();
         }
+
+        public void TYorumEkleSP(Yorum yorum)
+        {
+            // SP: [dbo].[up_YorumEkle]
+            // Parametreler: @KullaniciID, @RestoranID, @SiparisID, @YorumMetni, @Puan
+            
+            var pKullanici = new Microsoft.Data.SqlClient.SqlParameter("@KullaniciID", yorum.KullaniciID);
+            var pRestoran = new Microsoft.Data.SqlClient.SqlParameter("@RestoranID", yorum.RestoranID);
+            var pSiparis = new Microsoft.Data.SqlClient.SqlParameter("@SiparisID", yorum.SiparisID);
+            var pMetin = new Microsoft.Data.SqlClient.SqlParameter("@YorumMetni", yorum.YorumMetni ?? "");
+            var pPuan = new Microsoft.Data.SqlClient.SqlParameter("@Puan", yorum.Puan);
+
+            _context.Database.ExecuteSqlRaw("EXEC up_YorumEkle @KullaniciID, @RestoranID, @SiparisID, @YorumMetni, @Puan", 
+                pKullanici, pRestoran, pSiparis, pMetin, pPuan);
+        }
+
+        public void TYorumGuncelleSP(Yorum yorum)
+        {
+            // SP: [dbo].[up_YorumGuncelle]
+            // Parametreler: @KullaniciID, @SiparisID, @YeniYorum, @YeniPuan
+
+            var pKullanici = new Microsoft.Data.SqlClient.SqlParameter("@KullaniciID", yorum.KullaniciID);
+            var pSiparis = new Microsoft.Data.SqlClient.SqlParameter("@SiparisID", yorum.SiparisID);
+            var pYeniYorum = new Microsoft.Data.SqlClient.SqlParameter("@YeniYorum", yorum.YorumMetni ?? "");
+            var pYeniPuan = new Microsoft.Data.SqlClient.SqlParameter("@YeniPuan", yorum.Puan);
+
+            _context.Database.ExecuteSqlRaw("EXEC up_YorumGuncelle @KullaniciID, @SiparisID, @YeniYorum, @YeniPuan",
+                pKullanici, pSiparis, pYeniYorum, pYeniPuan);
+        }
     }
 }

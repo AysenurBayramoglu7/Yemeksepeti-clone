@@ -24,5 +24,9 @@ namespace YemekSepeti.Entities
         public int Puan {  get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public bool AktifMi { get; set; } = true;
+
+        public int SiparisID { get; set; }      
+        public virtual Siparis? Siparis { get; set; } 
+
     }
 }

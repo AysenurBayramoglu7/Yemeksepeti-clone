@@ -54,19 +54,37 @@ namespace YemekSepeti.WebUI.Controllers
             // 3. Yorumu oluştur ve kaydet
             try
             {
-                var yorum = new Yorum
+                // Mevcut yorumu kontrol et (Upsert mantığı)
+                var existingYorum = _yorumService.TGet(x => x.SiparisID == siparisId);
+
+                if (existingYorum != null)
                 {
-                    RestoranID = siparis.RestoranID, // RestoranID'yi siparişten alıyoruz
-                    KullaniciID = userId,
-                    Puan = puan,
-                    YorumMetni = yorumMetni,
-                    CreatedAt = DateTime.Now,
-                    AktifMi = true
-                };
+                    // GÜNCELLEME
+                    existingYorum.Puan = puan;
+                    existingYorum.YorumMetni = yorumMetni;
+                    existingYorum.RestoranID = siparis.RestoranID; // Güvenlik için
+                    existingYorum.KullaniciID = userId; // Güvenlik için
 
-                _yorumService.TInsert(yorum);
+                    _yorumService.TYorumGuncelleSP(existingYorum);
+                    TempData["Basari"] = "Yorumunuz başarıyla güncellendi.";
+                }
+                else
+                {
+                    // EKLEME
+                    var yorum = new Yorum
+                    {
+                        RestoranID = siparis.RestoranID,
+                        KullaniciID = userId,
+                        Puan = puan,
+                        YorumMetni = yorumMetni,
+                        CreatedAt = DateTime.Now,
+                        AktifMi = true,
+                        SiparisID = siparisId
+                    };
 
-                TempData["Basari"] = "Yorumunuz başarıyla kaydedildi. Teşekkür ederiz!";
+                    _yorumService.TYorumEkleSP(yorum);
+                    TempData["Basari"] = "Yorumunuz başarıyla kaydedildi. Teşekkür ederiz!";
+                }
             }
             catch (Exception ex)
             {
@@ -74,6 +92,17 @@ namespace YemekSepeti.WebUI.Controllers
             }
 
             return RedirectToAction("Index", "Siparis");
+        }
+
+        [HttpGet]
+        public IActionResult GetYorum(int siparisId)
+        {
+            var yorum = _yorumService.TGet(x => x.SiparisID == siparisId);
+            if (yorum != null)
+            {
+                return Json(new { exists = true, puan = yorum.Puan, yorum = yorum.YorumMetni });
+            }
+            return Json(new { exists = false });
         }
     }
 }

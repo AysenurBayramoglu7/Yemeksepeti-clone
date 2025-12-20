@@ -67,5 +67,27 @@ namespace YemekSepeti.BLL.Concrete
         {
              return _yorumDal.GetRestoranYorumlari(restoranId);
         }
+
+        public void TYorumEkleSP(Yorum yorum)
+        {
+            // İş Kuralı: Puan 1-5 arasında olmalı
+            if (yorum.Puan < 1 || yorum.Puan > 5)
+            {
+                throw new Exception("Puan 1 ile 5 arasında olmalıdır.");
+            }
+
+            _yorumDal.TYorumEkleSP(yorum);
+        }
+
+        public void TYorumGuncelleSP(Yorum yorum)
+        {
+             // İş Kuralı: Puan 1-5 arasında olmalı
+            if (yorum.Puan < 1 || yorum.Puan > 5)
+            {
+                throw new Exception("Puan 1 ile 5 arasında olmalıdır.");
+            }
+
+            _yorumDal.TYorumGuncelleSP(yorum);
+        }
     }
 }

@@ -12,5 +12,10 @@ namespace YemekSepeti.BLL.Abstract
         // Restoran yorumlarını getir (kullanıcı adı ile birlikte)
         List<Yorum> GetYorumlarByRestoran(int restoranId);
         List<Yorum> RestoranYorumlariGetir(int restoranId);
+        
+        // SP ile Yorum Ekle
+        void TYorumEkleSP(Yorum yorum);
+        // SP ile Yorum Güncelle
+        void TYorumGuncelleSP(Yorum yorum);
     }
 }

@@ -101,6 +101,14 @@ namespace YemekSepeti.DAL
                 .HasForeignKey(sd => sd.UrunID)
                 .OnDelete(DeleteBehavior.Restrict); // Kısıtla
 
+            modelBuilder.Entity<Yorum>()
+                .HasOne(y => y.Siparis)
+                .WithMany(s => s.Yorumlar)
+                .HasForeignKey(y => y.SiparisID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+
             // ❗ BURAYA EKLENİYOR
             modelBuilder.Entity<Restoran>().ToTable("Restoran");
 

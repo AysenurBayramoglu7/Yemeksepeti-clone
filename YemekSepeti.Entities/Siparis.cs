@@ -29,5 +29,8 @@ namespace YemekSepeti.Entities
         //public virtual ICollection<SiparisDetay> SiparisDetaylar { get; set; }
         public virtual ICollection<SiparisDetay> SiparisDetaylar { get; set; } = new HashSet<SiparisDetay>();
 
+        public virtual ICollection<Yorum> Yorumlar { get; set; } = new HashSet<Yorum>();
+
+
     }
 }
