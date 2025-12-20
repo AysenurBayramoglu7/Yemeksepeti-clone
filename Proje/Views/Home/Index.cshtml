@@ -1,4 +1,4 @@
-﻿@model YemekSepeti.WebUI.Models.HomeViewModel //model tanımı 
+﻿@model YemekSepeti.WebUI.Models.HomeViewModel
 
 @{
     ViewData["Title"] = "Ana Sayfa";
@@ -8,52 +8,73 @@
 <div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-md-10">
-            <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden border">
-                <span class="input-group-text bg-white border-0 ps-4 text-muted">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                    </svg>
-                </span>
-                <input type="text" class="form-control border-0" placeholder="Yemek, mutfak veya restoran arayın" style="box-shadow: none;">
-                <button class="btn btn-primary text-white fw-bold px-4 m-1 rounded-pill" type="button">Ara</button>
-            </div>
+            <form asp-controller="Home" asp-action="Index" method="get" class="w-100">
+                <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden border">
+                    <span class="input-group-text bg-white border-0 ps-4 text-muted">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                        </svg>
+                    </span>
+                    <input type="text" name="text" class="form-control border-0" placeholder="Yemek, mutfak veya restoran arayın" style="box-shadow: none;" value="@ViewData["SearchText"]">
+                    <button class="btn btn-primary text-white fw-bold px-4 m-1 rounded-pill" type="submit">Ara</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
-<!-- Hero / Karşılama Bölümü -->
-<div class="text-center py-5">
-    <h1 class="display-4 fw-bold">YemekSepeti'ne Hoşgeldiniz</h1>
-    <p class="lead">İstediğiniz lezzetler kapınızda.</p>
-</div>
-
-<!-- Mutfaklar Bölümü  -->
-<h2 class="mb-4">Mutfaklar</h2>
-<div class="kategori-slider-container mt-5">
-    
-    <button class="slider-btn left-btn" onclick="scrollSlider(-300)">❮</button>
-    <div class="kategori-slider">
-        @foreach (var kategori in Model.Kategoriler)
-        {
-            <a href="/Restoran/Index?kategoriId=@kategori.KategoriID" class="text-decoration-none">
-                <div class="kategori-item text-center">
-                    <img src="@kategori.KategoriResimUrl" class="kategori-img" />
-                    <p class="kategori-title">@kategori.KategoriAd</p>
-                </div>
-            </a>
-        }
+@if (ViewData["SearchText"] == null)
+{
+    <!-- Hero / Karşılama Bölümü -->
+    <div class="text-center py-5">
+        <h1 class="display-4 fw-bold">YemekSepeti'ne Hoşgeldiniz</h1>
+        <p class="lead">İstediğiniz lezzetler kapınızda.</p>
     </div>
-    <!-- Slider Buttons -->
-    <button class="slider-btn right-btn" onclick="scrollSlider(300)">❯</button>
-</div>
 
-<script>
-    function scrollSlider(value) {
-        const slider = document.querySelector('.kategori-slider');
-        slider.scrollBy({ left: value, behavior: 'smooth' });
-    }
-</script>
-<h2 class="mt-5 mb-4">Restoranlar</h2>
+    <!-- Mutfaklar Bölümü  -->
+    <h2 class="mb-4">Mutfaklar</h2>
+    <div class="kategori-slider-container mt-5">
+        
+        <button class="slider-btn left-btn" onclick="scrollSlider(-300)">❮</button>
+        <div class="kategori-slider">
+            @foreach (var kategori in Model.Kategoriler)
+            {
+                <a href="/Restoran/Index?kategoriId=@kategori.KategoriID" class="text-decoration-none">
+                    <div class="kategori-item text-center">
+                        <img src="@kategori.KategoriResimUrl" class="kategori-img" />
+                        <p class="kategori-title">@kategori.KategoriAd</p>
+                    </div>
+                </a>
+            }
+        </div>
+        <!-- Slider Buttons -->
+        <button class="slider-btn right-btn" onclick="scrollSlider(300)">❯</button>
+    </div>
+
+    <script>
+        function scrollSlider(value) {
+            const slider = document.querySelector('.kategori-slider');
+            slider.scrollBy({ left: value, behavior: 'smooth' });
+        }
+    </script>
+    <h2 class="mt-5 mb-4">Restoranlar</h2>
+}
+
+@if (ViewData["SearchText"] != null)
+{
+    <div class="alert alert-info">
+        "<strong>@ViewData["SearchText"]</strong>" için arama sonuçları: (@Model.Restoranlar.Count sonuç)
+        <a asp-action="Index" class="btn btn-sm btn-outline-dark ms-2">Temizle</a>
+    </div>
+}
+
+@if (Model.Restoranlar.Count == 0)
+{
+    <div class="alert alert-warning text-center">
+        Aradığınız kriterlere uygun restoran bulunamadı.
+    </div>
+}
+
 <!--Restoran kısmı-->
 <div class="row">
 @foreach (var r in Model.Restoranlar)

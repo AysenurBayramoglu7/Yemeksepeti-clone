@@ -15,11 +15,14 @@ namespace YemekSepeti.BLL.Abstract
         //yeni metod
         List<SiparisGecmisiDto> KullaniciSiparisGecmisiGetir(int kullaniciId);
         List<SiparisDetayDto> SiparisDetayGetir(int siparisId);
+        List<SiparisDetay> GetSiparisDetaylariEntity(int siparisId); // EKLENDİ
         void SiparisDurumGuncelle(
             int siparisId,
             SiparisDurumu yeniDurum,
             int restoranSahibiKullaniciId
         );
+        
+        void KullaniciSiparisIptal(int siparisId, int kullaniciId); // EKLENDİ
 
     }
 }

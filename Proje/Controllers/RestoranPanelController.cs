@@ -84,14 +84,65 @@ namespace YemekSepeti.WebUI.Controllers
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(userIdStr, out int userId)) return RedirectToAction("GirisYap", "Kullanici");
 
+            // 1. Mevcut siparişi çekip durumunu kontrol etmeliyiz
+            // (Concurrency/Eşzamanlılık durumunda veri tutarlılığı için tekrar DB'den çekmek iyidir)
+            var mevcutSiparis = _siparisService.TGet(x => x.SiparisID == siparisId);
+            if (mevcutSiparis == null)
+            {
+                TempData["Hata"] = "Sipariş bulunamadı.";
+                return RedirectToAction(nameof(Index));
+            }
+            
+            // KURAL 1: Teslim edilmiş sipariş iptal edilemez
+            if (mevcutSiparis.Durum == SiparisDurumu.TeslimEdildi && (SiparisDurumu)yeniDurum == SiparisDurumu.IptalEdildi)
+            {
+                TempData["Hata"] = "Müşteriye teslim edilmiş sipariş iptal edilemez!";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // KURAL 2: Zaten iptal edilmişse tekrar işlem yapma (Stok şişmesini önle)
+            if (mevcutSiparis.Durum == SiparisDurumu.IptalEdildi && (SiparisDurumu)yeniDurum == SiparisDurumu.IptalEdildi)
+            {
+                TempData["Bilgi"] = "Bu sipariş zaten iptal edilmiş, işlem yapılmadı.";
+                return RedirectToAction(nameof(Index));
+            }
+
             try
             {
-                _siparisService.SiparisDurumGuncelle(siparisId, (SiparisDurumu)yeniDurum, userId);
+                // 3. TRANSACTION (ATOMİK İŞLEM) BAŞLANGICI
+                // Sipariş durumu değişimi ve ürün stok iadesi "ya hep ya hiç" mantığıyla çalışmalı.
+                // Eğer stok güncellenirken hata olursa, sipariş durumu da eski haline döner.
+                using (var transaction = new System.Transactions.TransactionScope())
+                {
+
+                    // STOK İADE MANTIĞI (Eğer İptal Ediliyorsa ve eski durum İptal değilse)
+                    if ((SiparisDurumu)yeniDurum == SiparisDurumu.IptalEdildi && mevcutSiparis.Durum != SiparisDurumu.IptalEdildi)
+                    {
+                        var detaylar = _siparisService.GetSiparisDetaylariEntity(siparisId);
+                        foreach(var item in detaylar)
+                        {
+                            var urun = _urunService.TGet(u => u.UrunId == item.UrunID);
+                            if(urun != null)
+                            {
+                                urun.Stok += item.Adet;
+                                _urunService.TUpdate(urun);
+                            }
+                        }
+                    }
+
+                    // Sipariş durumunu güncelle
+                    _siparisService.SiparisDurumGuncelle(siparisId, (SiparisDurumu)yeniDurum, userId);
+                    
+                    // İşlemi onayla (Commit)
+                    transaction.Complete(); 
+                }
+                // TRANSACTION BİTİŞİ
+
                 TempData["Basarili"] = "Sipariş durumu güncellendi.";
             }
             catch (Exception ex)
             {
-                TempData["Hata"] = ex.Message;
+                TempData["Hata"] = "İşlem sırasında hata oluştu: " + ex.Message;
             }
 
             return RedirectToAction(nameof(Index));
@@ -203,6 +254,20 @@ namespace YemekSepeti.WebUI.Controllers
 
             // ModelState'den RestoranID hatasını kaldır (biz atadık)
             ModelState.Remove("RestoranID");
+
+            // LİMİT KONTROLÜ: Max 27 Ürün
+            var mevcutUrunSayisi = _urunService.TGetList(x => x.RestoranID == restoran.RestoranID && x.AktifMi == true).Count;
+            if (mevcutUrunSayisi >= 27)
+            {
+                ViewBag.Hata = "Maksimum ürün sayısına ulaştınız (27). Daha fazla ürün ekleyemezsiniz.";
+                
+                ViewBag.UrunKategorileri = new SelectList(
+                    _urunKategoriService.TGetList(),
+                    "UrunKategoriID",
+                    "UrunKategoriAd"
+                );
+                return View(urun);
+            }
 
             if (!ModelState.IsValid)
             {

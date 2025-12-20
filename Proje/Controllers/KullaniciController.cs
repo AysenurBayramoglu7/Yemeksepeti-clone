@@ -120,6 +120,123 @@ namespace YemekSepeti.WebUI.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        //HESAP BİLGİLERİ SAYFASI
+        // hesabım get metodu
+        //HESAP BİLGİLERİ SAYFASI
+        // Profil (Hesabım) GET
+        [HttpGet]
+        public IActionResult Profil()
+        {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("GirisYap");
+
+            var email = User.Identity.Name;
+
+            var user = _kullaniciService
+                .TGetList(x => x.Email == email)
+                .FirstOrDefault();
+
+            if (user == null)
+                return RedirectToAction("GirisYap");
+
+            return View(user);
+        }
+
+        // Profil (Hesabım) POST
+        [HttpPost]
+        public IActionResult Profil(Kullanici guncelBilgiler)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("GirisYap");
+
+            var email = User.Identity.Name;
+            var user = _kullaniciService.TGetList(x => x.Email == email).FirstOrDefault();
+
+            if (user == null) return RedirectToAction("GirisYap");
+
+            // Sadece izin verilen alanları güncelle
+            user.Ad = guncelBilgiler.Ad;
+            user.Soyad = guncelBilgiler.Soyad;
+            user.Telefon = guncelBilgiler.Telefon;
+            user.Adres = guncelBilgiler.Adres;
+
+            try
+            {
+                _kullaniciService.TUpdate(user);
+                TempData["SuccessMessage"] = "Bilgileriniz başarıyla güncellendi.";
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Güncelleme hatası: " + ex.Message);
+            }
+
+            return View(user);
+        }
+
+        // Şifre Değiştirme POST
+        [HttpPost]
+        public IActionResult SifreDegistir(string eskiSifre, string yeniSifre, string yeniSifreTekrar)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("GirisYap");
+
+            var email = User.Identity.Name;
+            var user = _kullaniciService.TGetList(x => x.Email == email).FirstOrDefault();
+
+            if (user == null) return RedirectToAction("GirisYap");
+
+            // Hata durumunda Profil sayfasına geri dönebilmek için user modelini View'e göndermeliyiz
+            
+            // Önceki şifre kontrolü
+            if (user.Sifre != eskiSifre)
+            {
+                ModelState.AddModelError("", "Mevcut şifreniz yanlış.");
+                return View("Profil", user);
+            }
+
+            if (yeniSifre != yeniSifreTekrar)
+            {
+                ModelState.AddModelError("", "Yeni şifreler uyuşmuyor.");
+                return View("Profil", user);
+            }
+
+            // Yeni şifreyi güncelle
+            user.Sifre = yeniSifre;
+            _kullaniciService.TUpdate(user);
+
+            TempData["SuccessMessage"] = "Şifreniz başarıyla değiştirildi.";
+            return RedirectToAction("Profil");
+        }
+
+        [HttpPost]
+        public IActionResult Hesabim(Kullanici model)
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+                return RedirectToAction("GirisYap");
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            var user = _kullaniciService.TGet(x => x.KullaniciID == userId);
+
+            if (user == null)
+                return RedirectToAction("GirisYap");
+
+            user.Ad = model.Ad;
+            user.Soyad = model.Soyad;
+            user.Telefon = model.Telefon;
+            user.Adres = model.Adres;
+
+            _kullaniciService.TUpdate(user);
+
+            TempData["ok"] = "Bilgiler başarıyla güncellendi.";
+            return RedirectToAction("Hesabim");
+        }
+
+
+
+
         // CikisYap metodu
         [HttpGet]
         public async Task<IActionResult> CikisYap()
@@ -127,5 +244,6 @@ namespace YemekSepeti.WebUI.Controllers
             await HttpContext.SignOutAsync("Cookies");
             return RedirectToAction("GirisYap");
         }
+
     }
 }

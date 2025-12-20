@@ -56,6 +56,11 @@ namespace YemekSepeti.BLL.Concrete
             return _siparisDal.SiparisDetayGetir(siparisId);
         }
 
+        public List<SiparisDetay> GetSiparisDetaylariEntity(int siparisId)
+        {
+            return _siparisDal.GetSiparisDetaylariEntity(siparisId);
+        }
+
         public void SiparisDurumGuncelle(
             int siparisId,
             SiparisDurumu yeniDurum,
@@ -81,6 +86,7 @@ namespace YemekSepeti.BLL.Concrete
 
             bool gecerliGecis = (mevcutDurum == SiparisDurumu.OnayBekliyor &&yeniDurum == SiparisDurumu.Hazirlaniyor)
             || (mevcutDurum == SiparisDurumu.OnayBekliyor &&yeniDurum == SiparisDurumu.IptalEdildi)
+            || (mevcutDurum == SiparisDurumu.Hazirlaniyor && yeniDurum == SiparisDurumu.IptalEdildi) // EKLENDİ
             || (mevcutDurum == SiparisDurumu.Hazirlaniyor && yeniDurum == SiparisDurumu.Yolda)
             || (mevcutDurum == SiparisDurumu.Yolda && yeniDurum == SiparisDurumu.TeslimEdildi);
 
@@ -93,6 +99,21 @@ namespace YemekSepeti.BLL.Concrete
 
         }
 
+        public void KullaniciSiparisIptal(int siparisId, int kullaniciId)
+        {
+            var siparis = _siparisDal.Get(x => x.SiparisID == siparisId);
+            if (siparis == null) throw new Exception("Sipariş bulunamadı.");
+
+            if (siparis.KullaniciID != kullaniciId)
+                throw new Exception("Bu sipariş size ait değil.");
+
+            // Durum kontrolü: Sadece OnayBekliyor iptal edilebilir.
+            if (siparis.Durum >= SiparisDurumu.Hazirlaniyor)
+                throw new Exception("Hazırlanmaya başlanan sipariş iptal edilemez.");
+
+            siparis.Durum = SiparisDurumu.IptalEdildi;
+            _siparisDal.Update(siparis);
+        }
 
     }
 }

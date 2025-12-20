@@ -80,5 +80,6 @@ namespace YemekSepeti.BLL.Concrete
             // DAL ÇAĞRISI: Veriyi veritabanında güncelle
             _restoranDal.Update(entity);
         }
+
     }
 }

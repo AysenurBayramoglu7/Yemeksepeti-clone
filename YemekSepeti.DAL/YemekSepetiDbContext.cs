@@ -37,6 +37,8 @@ namespace YemekSepeti.DAL
         public DbSet<SiparisDetayDto> SiparisDetayDtos { get; set; }
         public DbSet<SiparisGecmisiDto> SiparisGecmisiDtos { get; set; } 
         public DbSet<UrunSatisRaporDto> UrunSatisRaporDtos { get; set; }
+        public DbSet<RestoranSonuc> RestoranSonuc { get; set; }
+
 
 
 
@@ -159,6 +161,8 @@ namespace YemekSepeti.DAL
             modelBuilder.Entity<SiparisGecmisiDto>().HasNoKey();// Keyless entity olarak tanımlanır.YAni tablo oluşturulmaz.
             modelBuilder.Entity<SiparisDetayDto>().HasNoKey();
             modelBuilder.Entity<UrunSatisRaporDto>().HasNoKey();
+            modelBuilder.Entity<RestoranSonuc>().HasNoKey();
+
 
 
         }

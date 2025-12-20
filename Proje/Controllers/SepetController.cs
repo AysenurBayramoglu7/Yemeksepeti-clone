@@ -59,7 +59,7 @@ namespace YemekSepeti.WebUI.Controllers
             // Eğer istenen adet stoktan fazlaysa
             if (istenenToplamAdet > urun.Stok)
             {
-                 return Json(new { success = false, message = $"Stok yetersiz! Bu üründen en fazla {urun.Stok} adet alabilirsiniz. Sepetinizde {mevcutAdet} adet var." });
+                 return Json(new { success = false, message = $"Stokta sadece {urun.Stok} adet var, daha fazla ekleyemezsiniz." });
             }
 
             // Stok yeterliyse normal ekle
@@ -101,7 +101,7 @@ namespace YemekSepeti.WebUI.Controllers
 
                     if (yeniAdet > dbUrun.Stok)
                     {
-                        TempData["ErrorMessage"] = $"Stok yetersiz! Maksimum {dbUrun.Stok} adet alabilirsiniz.";
+                        TempData["ErrorMessage"] = $"Stokta sadece {dbUrun.Stok} adet var, daha fazla ekleyemezsiniz.";
                     }
                     else if (yeniAdet > 0)
                     {

@@ -1,10 +1,11 @@
-
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Proje.Models;
 using System.Diagnostics;
-using YemekSepeti.BLL.Abstract;
-using YemekSepeti.WebUI.Models;
 using System.Security.Claims;
+using YemekSepeti.BLL.Abstract;
+using YemekSepeti.DAL;
+using YemekSepeti.WebUI.Models;
 
 namespace Proje.Controllers
 {
@@ -14,24 +15,53 @@ namespace Proje.Controllers
         private readonly IKategoriService _kategoriService;
         private readonly IRestoranService _restoranService;
         private readonly IFavoriRestoranlarService _favoriService;
+        private readonly YemekSepetiDbContext _context;
+
+       
 
         // Constructor
         public HomeController(
             ILogger<HomeController> logger,
             IKategoriService kategoriService,
             IRestoranService restoranService,
-            IFavoriRestoranlarService favoriService)
+            IFavoriRestoranlarService favoriService,
+            YemekSepetiDbContext context)
         {
             _logger = logger;
             _kategoriService = kategoriService;
             _restoranService = restoranService;
             _favoriService = favoriService;
+            _context = context;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string text)
         {
             var kategoriler = _kategoriService.TGetList();
-            var restoranlar = _restoranService.TGetList();
+            List<YemekSepeti.Entities.Restoran> restoranlar;
+
+            if (!string.IsNullOrEmpty(text))
+            {
+                ViewData["SearchText"] = text; // View'da göstermek için
+                
+                // Parametreyi güvenli bir şekilde oluşturuyoruz
+                var pText = new Microsoft.Data.SqlClient.SqlParameter("@text", text);
+
+                // 1. ADIM: SP'den sadece filtreleme sonucunu (ID'leri) alıyoruz
+                var aramaSonuclari = _context.RestoranSonuc
+                    .FromSqlRaw("EXEC up_Arama @text", pText)
+                    .ToList();
+
+                // 2. ADIM: ID listesini çıkarıyoruz
+                var ids = aramaSonuclari.Select(x => x.RestoranID).ToList();
+
+                // 3. ADIM: Gerçek verileri BLL üzerinden çekiyoruz (Böylece Puan, Tutar vb. dolu geliyor)
+                restoranlar = _restoranService
+                                .TGetList(r => ids.Contains(r.RestoranID));
+            }
+            else
+            {
+                restoranlar = _restoranService.TGetList();
+            }
 
             var model = new HomeViewModel
             {

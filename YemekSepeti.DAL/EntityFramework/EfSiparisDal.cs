@@ -39,5 +39,12 @@ namespace YemekSepeti.DAL.EntityFramework
                            .AsEnumerable() // Veriyi çekmek için
                            .ToList();
         }
+
+        public List<SiparisDetay> GetSiparisDetaylariEntity(int siparisId)
+        {
+            return _context.Set<SiparisDetay>()
+                           .Where(x => x.SiparisID == siparisId)
+                           .ToList();
+        }
     }
 }

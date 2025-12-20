@@ -74,6 +74,18 @@
                                             <i class="bi bi-star-fill"></i> Yorum Yap
                                         </button>
                                     }
+
+                                    @* İptal Et Butonu (Sadece 'Hazırlanıyor'dan önceki aşamalarda) *@
+                                    @if (item.Siparis.Durum < (int)SiparisDurumu.Hazirlaniyor)
+                                    {
+                                        <form asp-controller="Siparis" asp-action="IptalEt" method="post" class="d-inline ms-1">
+                                            <input type="hidden" name="siparisId" value="@item.Siparis.SiparisID" />
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Siparişi iptal etmek istediğinize emin misiniz?');">
+                                                İptal Et <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        </form>
+                                    }
                                 </td>
                             </tr>
 
@@ -120,7 +132,7 @@
 <div class="modal fade" id="yorumModal" tabindex="-1" aria-labelledby="yorumModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="/Yorum/Ekle" method="post">
+            <form action="/Yorum/Ekle" method="post" id="yorumForm">
                 <div class="modal-header bg-warning">
                     <h5 class="modal-title" id="yorumModalLabel">
                         <i class="bi bi-star-fill"></i> Yorum Yap & Puan Ver
@@ -204,7 +216,7 @@
         });
 
         // Form Submit kontrolü (Opsiyonel: Puan seçildi mi?)
-        $('form').on('submit', function (e) {
+        $('#yorumForm').on('submit', function (e) {
             var puan = $('#secilenPuan').val();
             if (puan == 0 || puan == "0") {
                 e.preventDefault();
