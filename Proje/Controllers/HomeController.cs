@@ -79,6 +79,9 @@ namespace Proje.Controllers
                     var favoriRestoranlar = _favoriService.FavorileriGetir(userId);// Kullanıcının favori restoranlarını alıyoruz
                     // Sadece ID'leri listeye alıyoruz
                     model.FavoriRestoranIdleri = favoriRestoranlar.Select(x => x.RestoranID).ToList();
+                    
+                    // Partial View için ViewBag'e de atıyoruz
+                    ViewBag.FavoriRestoranIdleri = model.FavoriRestoranIdleri;
                 }
             }
 

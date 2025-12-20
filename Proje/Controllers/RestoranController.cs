@@ -3,6 +3,8 @@ using YemekSepeti.BLL.Abstract;
 using YemekSepeti.Entities;
 using YemekSepeti.WebUI.Models;
 
+using System.Security.Claims; // ClaimTypes için gerekli
+
 namespace YemekSepeti.WebUI.Controllers
 {
     public class RestoranController : Controller
@@ -11,18 +13,22 @@ namespace YemekSepeti.WebUI.Controllers
         private readonly IUrunService _urunService;
         private readonly IUrunKategoriService _urunkategoriService;
         private readonly IYorumService _yorumService;
+        private readonly IFavoriRestoranlarService _favoriService; // Yeni eklendi
 
         public RestoranController(
             IRestoranService restoranService, 
             IUrunService urunService, 
             IUrunKategoriService urunkategoriService,
-            IYorumService yorumService)
+            IYorumService yorumService,
+            IFavoriRestoranlarService favoriService) // Constructor güncellendi
         {
             _restoranService = restoranService;
             _urunService = urunService;
             _urunkategoriService = urunkategoriService;
             _yorumService = yorumService;
+            _favoriService = favoriService;
         }
+
         //kategoriId'ye göre restoranları listeleme
         //sadece aktif ve onaylı restoranlar gösterilir
         public IActionResult Index(int kategoriId)
@@ -30,6 +36,19 @@ namespace YemekSepeti.WebUI.Controllers
             var restoranlar = _restoranService.TGetList(
                 x => x.KategoriID == kategoriId && x.AktifMi == true && x.OnayliMi == true
             );
+
+            // Favori bilgilerini ViewBag ile taşıyalım (Modeli değiştirmeden çözüm)
+            // Bu sayede "eski haline" en yakın yapıyı koruruz ama fonksiyonellik çalışır.
+            if (User.Identity.IsAuthenticated)
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim != null)
+                {
+                    int userId = int.Parse(userIdClaim.Value);
+                    var favoriRestoranlar = _favoriService.FavorileriGetir(userId);
+                    ViewBag.FavoriRestoranIdleri = favoriRestoranlar.Select(x => x.RestoranID).ToList();
+                }
+            }
 
             return View(restoranlar);
         }

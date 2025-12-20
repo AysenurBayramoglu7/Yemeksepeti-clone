@@ -1,0 +1,40 @@
+@model YemekSepeti.Entities.Restoran
+
+<div class="card shadow-sm border-0 restoran-card h-100 position-relative">
+
+    @* Favori Butonu *@
+    @if (User.Identity.IsAuthenticated)
+    {
+        // ViewBag kullanıyoruz ki Model ne olursa olsun çalışsın
+        var favList = ViewBag.FavoriRestoranIdleri as List<int>;
+        bool isFavorite = favList != null && favList.Contains(Model.RestoranID);
+        string heartClass = isFavorite ? "bi-heart-fill text-danger" : "bi-heart text-secondary";
+
+        <div class="position-absolute top-0 end-0 p-2 z-index-1" style="z-index: 10;">
+             <button class="btn btn-link p-0 favorite-icon" 
+                     data-restoran-id="@Model.RestoranID" 
+                     onclick="favoriEkle(@Model.RestoranID, event, this)">
+                <i class="bi @heartClass fs-4" style="filter: drop-shadow(0 0 2px rgba(255,255,255,0.8));"></i>
+             </button>
+        </div>
+    }
+
+    <a href="/Restoran/Detay/@Model.RestoranID" class="text-decoration-none text-dark">
+
+        <img src="@Model.RestoranResimUrl" class="card-img-top restoran-img" />
+
+        <div class="card-body">
+            <h5 class="card-title">@Model.RestoranAd</h5>
+
+            <p class="text-muted mb-1">
+                ⏱ @Model.OrtalamaSure dk • 🛒 Min: @Model.MinSiparisTutar TL
+            </p>
+
+            @* Puan Kısmı *@
+            <p class="text-muted small mb-0 mt-1">
+                <i class="bi bi-star-fill text-warning"></i> @(Model.Puan.HasValue ? Model.Puan.Value.ToString("0.0") : "-") / 5
+            </p>
+        </div>
+
+    </a>
+</div>

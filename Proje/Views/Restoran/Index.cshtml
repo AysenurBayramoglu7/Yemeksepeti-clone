@@ -7,23 +7,10 @@
     @foreach (var r in Model)
     {
         <div class="col-md-4 mb-4">
-
-            <a href="/Restoran/Detay/@r.RestoranID" class="text-decoration-none text-dark">
-                <div class="card shadow-sm border-0 restoran-card h-100">
-
-                    <img src="@r.RestoranResimUrl" class="card-img-top restoran-img" />
-
-                    <div class="card-body">
-                        <h5 class="card-title">@r.RestoranAd</h5>
-                        <p class="text-muted">
-                            ⏱ @r.OrtalamaSure dk • 🛒 Min: @r.MinSiparisTutar TL
-                        </p>
-                    </div>
-
-                </div>
-            </a>
-
+             @await Html.PartialAsync("_RestoranKart", r)
         </div>
     }
 </div>
+
+
 
