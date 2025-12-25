@@ -1,28 +1,19 @@
-﻿@*{
-    // Varsayılan Layout dosyasını kullanın
-    Layout = "_Layout";
-    ViewData["Title"] = "Admin Paneli";
-}*@
-@{
-    // Yeni oluşturduğumuz Admin Layout'u kullan
-    Layout = "_AdminLayout";
-    ViewData["Title"] = "Gösterge Paneli"; // Sayfa başlığını belirle
-}
+﻿
 @{
     // Yeni oluşturduğumuz Admin Layout'u kullan
     Layout = "_AdminLayout";
     ViewData["Title"] = "Gösterge Paneli"; // Sayfa başlığını belirle
 }
 
+
 <div class="row">
     <div class="col-12">
         <div class="alert alert-success" role="alert">
             <h4 class="alert-heading">Hoş Geldiniz, Admin!</h4>
-            <p>Admin paneli başarıyla yüklendi. Rolünüz: **@(User.Identity?.Name)**</p>
+            <p>Admin paneli başarıyla yüklendi. Rolünüz: @(User.Identity?.Name)</p>
             <hr>
             <p class="mb-0">Lütfen soldaki menüden Restoran Yönetimi işlemlerine başlayınız.</p>
         </div>
     </div>
 </div>
 
-@* Burada, sistem istatistikleri, bekleyen onaylar vb. Dashboard içeriği yer alacaktır. *@

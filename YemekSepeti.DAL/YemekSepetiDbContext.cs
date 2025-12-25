@@ -13,10 +13,6 @@ namespace YemekSepeti.DAL
 {   // Veri tabanına yansıtılmak istenen tüm sınıflar burda olucak
     public class YemekSepetiDbContext : DbContext
     {
-        /*public YemekSepetiDbContext()
-        {
-        }*/
-
         public YemekSepetiDbContext(DbContextOptions<YemekSepetiDbContext> options) : base(options)
         {
         }
@@ -40,15 +36,7 @@ namespace YemekSepeti.DAL
         public DbSet<RestoranSonuc> RestoranSonuc { get; set; }
 
 
-
-
-        // YemekSepetiDbContext.cs içinde OnModelCreating metodunun sonuna ekleyin
-
-        // [Neden]: Roller tablosuna başlangıç (seed) verilerini ekliyoruz.
-        // Bu, KullaniciManager'ın (RolID = 3) hatasız çalışmasını garanti eder.
-
-
-        // ❗ İLİŞKİ AYARLARI BURAYA GELECEK
+        //  İLİŞKİ AYARLARI BURAYA GELECEK
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -66,7 +54,7 @@ namespace YemekSepeti.DAL
                 .WithMany(k => k.Siparisler)
                 .HasForeignKey(s => s.KullaniciID)
                 .OnDelete(DeleteBehavior.Restrict);
-            //Entity Framework Core'un (EF Core) varsayılan çoğul adlandırma 
+           
             // Yorum - Kullanici İlişkisi
             modelBuilder.Entity<Yorum>()
                 .HasOne(y => y.Kullanici)
@@ -107,26 +95,21 @@ namespace YemekSepeti.DAL
                 .HasForeignKey(y => y.SiparisID)
                 .OnDelete(DeleteBehavior.Restrict);
 
-
-
-            // ❗ BURAYA EKLENİYOR
             modelBuilder.Entity<Restoran>().ToTable("Restoran");
+            modelBuilder.Entity<SiparisDetay>().ToTable("SiparisDetaylari");
 
             // Trigger kullanan tabloları EF Core'a bildiriyoruz ki trigger'lar çalışsın
-            //YENİ EKLENDİİİİİ
-            // SiparisDetay tablosunun adını belirt (Hata Çözümü)
-            modelBuilder.Entity<SiparisDetay>().ToTable("SiparisDetaylari");
             modelBuilder.Entity<SiparisDetay>().ToTable(tb => tb.HasTrigger("tr_SiparisDetay_StokDus"));
             modelBuilder.Entity<Urun>().ToTable(tb => tb.HasTrigger("tr_Urun_StokKontrol"));
 
-            // Yorum tablosu için Trigger Bildirimi (HATA ÇÖZÜMÜ)
-            modelBuilder.Entity<Yorum>().ToTable("Yorumlar"); // Tablo adını da garantiye alalım
-            modelBuilder.Entity<Yorum>().ToTable(tb => tb.HasTrigger("trg_RestoranPuanGuncelle")); // Trigger olduğu için bunu eklemeliyiz.
+            // Yorum tablosu için Trigger 
+            modelBuilder.Entity<Yorum>().ToTable("Yorumlar"); 
+            modelBuilder.Entity<Yorum>().ToTable(tb => tb.HasTrigger("trg_RestoranPuanGuncelle")); 
 
-            // Bu satır da eklenmeli! Siparis tablosu için de aynı sorun yaşanıyordu.
+            
             modelBuilder.Entity<Siparis>().ToTable("Siparis");
 
-            // YemekSepetiDbContext.cs içine OnModelCreating metodunun içine eklenmeli
+            
 
             // Fiyat Alanları
             modelBuilder.Entity<Siparis>().Property(s => s.ToplamTutar).HasPrecision(18, 2);
@@ -134,7 +117,7 @@ namespace YemekSepeti.DAL
             modelBuilder.Entity<Urun>().Property(u => u.Fiyat).HasPrecision(18, 2);
 
             // Puan Alanı
-            modelBuilder.Entity<Restoran>().Property(r => r.Puan).HasPrecision(3, 2); // 0.00 ile 9.99 arası puanlama için
+            modelBuilder.Entity<Restoran>().Property(r => r.Puan).HasPrecision(3, 2); 
             modelBuilder.Entity<Restoran>().Property(r => r.MinSiparisTutar).HasColumnType("decimal(18,2)");
 
 
@@ -165,8 +148,8 @@ namespace YemekSepeti.DAL
                 .HasForeignKey(fr => fr.RestoranID)
                 .OnDelete(DeleteBehavior.Restrict);
            
-            // 🔹 SP DTO (Keyless Entity)
-            modelBuilder.Entity<SiparisGecmisiDto>().HasNoKey();// Keyless entity olarak tanımlanır.YAni tablo oluşturulmaz.
+            //  SP DTO (Keyless Entity)
+            modelBuilder.Entity<SiparisGecmisiDto>().HasNoKey();// Keyless entity olarak tanımlanır.Yani tablo oluşturulmaz.
             modelBuilder.Entity<SiparisDetayDto>().HasNoKey();
             modelBuilder.Entity<UrunSatisRaporDto>().HasNoKey();
             modelBuilder.Entity<RestoranSonuc>().HasNoKey();

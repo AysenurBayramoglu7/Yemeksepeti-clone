@@ -22,7 +22,7 @@ namespace YemekSepeti.WebUI.Controllers
         [HttpPost]
         public IActionResult Ekle(int siparisId, int puan, string yorumMetni)
         {
-            // 1. Giriş yapan kullanıcıyı bul
+            //Giriş yapan kullanıcıyı bul
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(userIdStr, out int userId))
             {
@@ -30,7 +30,7 @@ namespace YemekSepeti.WebUI.Controllers
                 return RedirectToAction("Index", "Siparis");
             }
 
-            // 2. Siparişin bu kullanıcıya ait olduğunu ve TeslimEdildi olduğunu kontrol et
+            //Siparişin bu kullanıcıya ait olduğunu ve teslim edildi mi bak 
             var siparis = _siparisService.TGet(s => s.SiparisID == siparisId);
             
             if (siparis == null)
@@ -51,15 +51,15 @@ namespace YemekSepeti.WebUI.Controllers
                 return RedirectToAction("Index", "Siparis");
             }
 
-            // 3. Yorumu oluştur ve kaydet
+            //Yorumu oluştur ve kaydet
             try
             {
-                // Mevcut yorumu kontrol et (Upsert mantığı)
+                // Mevcut yorumu kontrol et yorum var mı yok mu?
                 var existingYorum = _yorumService.TGet(x => x.SiparisID == siparisId);
 
                 if (existingYorum != null)
                 {
-                    // GÜNCELLEME
+                    // Yorum varsa güncelleme
                     existingYorum.Puan = puan;
                     existingYorum.YorumMetni = yorumMetni;
                     existingYorum.RestoranID = siparis.RestoranID; // Güvenlik için
@@ -70,7 +70,7 @@ namespace YemekSepeti.WebUI.Controllers
                 }
                 else
                 {
-                    // EKLEME
+                    // Yorum yoksa ekleme
                     var yorum = new Yorum
                     {
                         RestoranID = siparis.RestoranID,
@@ -103,6 +103,43 @@ namespace YemekSepeti.WebUI.Controllers
                 return Json(new { exists = true, puan = yorum.Puan, yorum = yorum.YorumMetni });
             }
             return Json(new { exists = false });
+        }
+
+        // YENİ: Yorum Silme İşlemi
+        [HttpPost]
+        public IActionResult Sil(int siparisId)
+        {
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdStr, out int userId))
+            {
+                return Json(new { success = false, message = "Oturum açmanız gerekiyor." });
+            }
+
+            try
+            {
+                var yorum = _yorumService.TGet(x => x.SiparisID == siparisId);
+                if (yorum == null)
+                {
+                    return Json(new { success = false, message = "Yorum bulunamadı." });
+                }
+
+                // Güvenlik: Yorumu silmeye çalışan kişi, yorumun sahibi mi?
+                if (yorum.KullaniciID != userId)
+                {
+                    return Json(new { success = false, message = "Bu yorumu silmeye yetkiniz yok." });
+                }
+
+                _yorumService.TDelete(yorum);
+                
+                // NOT: Trigger veritabanında tanımlı olduğu için, silme işlemi sonrası 
+                // otomatik olarak Restoran puanını güncelleyecektir.
+                
+                return Json(new { success = true, message = "Yorum başarıyla silindi." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Hata oluştu: " + ex.Message });
+            }
         }
     }
 }

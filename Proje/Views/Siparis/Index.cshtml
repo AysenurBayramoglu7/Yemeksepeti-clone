@@ -163,11 +163,16 @@
                         <textarea class="form-control" name="yorumMetni" id="yorumMetni" rows="4" placeholder="Deneyiminizi paylaşın..." required></textarea>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
-                    <button type="submit" class="btn btn-warning" id="btnYorumKaydet">
-                        <i class="bi bi-send"></i> Gönder
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-danger" id="btnYorumSil" style="display:none;" onclick="yorumSil()">
+                        <i class="bi bi-trash"></i> Sil
                     </button>
+                    <div>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-warning" id="btnYorumKaydet">
+                            <i class="bi bi-send"></i> Gönder
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -199,7 +204,8 @@
             $('#secilenPuan').val(0);
             $('#yorumMetni').val('');
             $('.star-icon').removeClass('bi-star-fill active').addClass('bi-star');
-            $('#btnYorumKaydet').html('<i class="bi bi-send"></i> Gönder'); // Buton metni varsayılan
+            $('#btnYorumKaydet').html('<i class="bi bi-send"></i> Gönder');
+            $('#btnYorumSil').hide(); // Sil butonunu başta gizle
 
             // AJAX ile mevcut yorumu sorgula
             $.get('/Yorum/GetYorum?siparisId=' + siparisId, function (data) {
@@ -215,8 +221,9 @@
                         }
                     });
 
-                    // Buton metnini değiştir
+                    // Buton metnini değiştir ve Sil butonunu göster
                     $('#btnYorumKaydet').html('<i class="bi bi-pencil-square"></i> Güncelle');
+                    $('#btnYorumSil').show();
                 }
             });
         }
@@ -244,5 +251,21 @@
                 alert("Lütfen bir puan seçin!");
             }
         });
+
+        // Yorum Silme İşlemi
+        function yorumSil() {
+            if (!confirm('Yorumunuzu silmek istediğinize emin misiniz?')) return;
+
+            var siparisId = $('#yorumSiparisId').val();
+
+            $.post('/Yorum/Sil', { siparisId: siparisId }, function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    location.reload(); // Sayfayı yenile
+                } else {
+                    alert(response.message);
+                }
+            });
+        }
     </script>
 }

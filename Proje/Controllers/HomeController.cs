@@ -11,13 +11,13 @@ namespace Proje.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<HomeController> _logger; //logger ekledik. Hata gibi şeylerde kullanabiliriz
         private readonly IKategoriService _kategoriService;
         private readonly IRestoranService _restoranService;
         private readonly IFavoriRestoranlarService _favoriService;
-        private readonly YemekSepetiDbContext _context;
+        private readonly YemekSepetiDbContext _context; // DbContext ekledik.Doğrudan SP çağrısı için
 
-       
+
 
         // Constructor
         public HomeController(
@@ -39,28 +39,28 @@ namespace Proje.Controllers
             var kategoriler = _kategoriService.TGetList();
             List<YemekSepeti.Entities.Restoran> restoranlar;
 
-            if (!string.IsNullOrEmpty(text))
+            if (!string.IsNullOrEmpty(text))// Arama yapıldıysa
             {
-                ViewData["SearchText"] = text; // View'da göstermek için
-                
-                // Parametreyi güvenli bir şekilde oluşturuyoruz
+                ViewData["SearchText"] = text; // View'e gönderilir 
+
+                //Burada sql enjeksiyon saldırılarını önlemek için parametre kullanıyoruz
                 var pText = new Microsoft.Data.SqlClient.SqlParameter("@text", text);
 
-                // 1. ADIM: SP'den sadece filtreleme sonucunu (ID'leri) alıyoruz
-                var aramaSonuclari = _context.RestoranSonuc
+                // SP'den sadece filtreleme sonucunu (ID'leri) alıyoruz
+                var aramaSonuclari = _context.RestoranSonuc // RestoranSonuc, SP sonucu için kullanılan Dto sınıfıdır. 
                     .FromSqlRaw("EXEC up_Arama @text", pText)
                     .ToList();
 
-                // 2. ADIM: ID listesini çıkarıyoruz
+                // Sp den dönen ID'leri listeye alıyoruz
                 var ids = aramaSonuclari.Select(x => x.RestoranID).ToList();
 
-                // 3. ADIM: Gerçek verileri BLL üzerinden çekiyoruz (Böylece Puan, Tutar vb. dolu geliyor)
+                //Gerçek verileri BLL üzerinden çekiyoruz. yani Puan, Tutar gibi kısımlar dolu geliyor
                 restoranlar = _restoranService
-                                .TGetList(r => ids.Contains(r.RestoranID));
+                                .TGetList(r => ids.Contains(r.RestoranID));//asıl veri restoranlar tablosunda sp ile filtreleme yapıyoruz
             }
             else
             {
-                restoranlar = _restoranService.TGetList();
+                restoranlar = _restoranService.TGetList();//arama yapılmadıysa tüm restoranları getir
             }
 
             var model = new HomeViewModel
@@ -75,11 +75,11 @@ namespace Proje.Controllers
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
                 if (userIdClaim != null)
                 {
-                    int userId = int.Parse(userIdClaim.Value);
+                    int userId = int.Parse(userIdClaim.Value);// Kullanıcı ID'sini alıyoruz
                     var favoriRestoranlar = _favoriService.FavorileriGetir(userId);// Kullanıcının favori restoranlarını alıyoruz
-                    // Sadece ID'leri listeye alıyoruz
+                    // Favori restoran ID'lerini ViewModel'e atıyoruz. kalpli olanları dolu göstermek için.
                     model.FavoriRestoranIdleri = favoriRestoranlar.Select(x => x.RestoranID).ToList();
-                    
+
                     // Partial View için ViewBag'e de atıyoruz
                     ViewBag.FavoriRestoranIdleri = model.FavoriRestoranIdleri;
                 }
@@ -92,7 +92,7 @@ namespace Proje.Controllers
         {
             return View();
         }
-
+        // Hata sayfası için
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

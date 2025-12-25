@@ -1,17 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using System; // try-catch için gerekli
+using System; 
 using System.Security.Claims;
-using YemekSepeti.BLL.Abstract; // IKullaniciService'e erişim için
-using YemekSepeti.BLL.Concrete; // KullaniciManager'a erişim için
-using YemekSepeti.Entities; // Kullanici modeline erişim için
+using YemekSepeti.BLL.Abstract; 
+using YemekSepeti.BLL.Concrete; 
+using YemekSepeti.Entities; 
 
 namespace YemekSepeti.WebUI.Controllers
 {
-    // [Neden]: Tüm kullanıcı işlemlerini (Kayıt, Giriş vb.) yönetecek trafik polisidir.
+    
     public class KullaniciController : Controller
     {
-        // 1. MANAGER SINIFINI TANIMLAMA
+        
         private readonly IKullaniciService _kullaniciService;
 
         public KullaniciController(IKullaniciService kullaniciService)
@@ -19,40 +19,37 @@ namespace YemekSepeti.WebUI.Controllers
             _kullaniciService = kullaniciService;
         }
 
-        // --- 2. Kayıt Formunu Gösterme (GET) ---
-        // Kullanıcı tarayıcıda /Kullanici/KayitOl yazdığında çalışır.
+        //Kayıt Formunu Gösterme (GET) ---
         [HttpGet]
         public IActionResult KayitOl()
         {
-            // [Neden]: Kayıt formunu döndürür.
+            //Kayıt formunu döndürür.
             return View();
         }
 
-        // --- 3. Veriyi İşleme (POST) ---
         // Kullanıcı formu doldurup POST ettiğinde çalışır.
         [HttpPost]
         public IActionResult KayitOl(Kullanici yeniKullanici)
         {
-            // [Neden]: Eğer formda C# Model kısıtlamalarına uymayan veri varsa tekrar formu gösterir.
+            //Eğer formda C# Model kısıtlamalarına uymayan veri varsa tekrar formu gösterir.
             if (!ModelState.IsValid)
             {
                 return View(yeniKullanici);
             }
 
-            // [Neden]: BLL'deki iş kurallarını (email, şifre) çalıştırmak için try-catch kullanılır.
+            //BLL'deki iş kurallarını  çalıştırmak için try-catch kullanılır.
             try
             {
                 // BLL'deki tüm iş kurallarını aktive eder.
                 _kullaniciService.TInsert(yeniKullanici);
                 TempData["SuccessMessage"] = "Kayıt işlemi başarıyla tamamlandı! Giriş yapabilirsiniz.";
-                // [Neden]: Başarılıysa kullanıcıyı Giriş sayfasına yönlendirir.
+                //Başarılıysa kullanıcıyı Giriş sayfasına yönlendirir.
                 return RedirectToAction("GirisYap", "Kullanici");
             }
             catch (Exception ex)
             {
-                // [Neden]: BLL'den gelen hata mesajını (Örn: "Email zaten kayıtlı") View'a taşır.
+                // BLL'den gelen hata mesajını) View'a taşır.
                 ModelState.AddModelError("", ex.Message);
-
                 // Hata mesajıyla formu tekrar gösterir.
                 return View(yeniKullanici);
             }
@@ -65,8 +62,7 @@ namespace YemekSepeti.WebUI.Controllers
             return View();
         }
 
-        // KullaniciController.cs içinde
-
+        // --- Giriş İşlemi (POST) ---
         [HttpPost]
         public async Task<IActionResult> GirisYap(string email, string sifre, string? returnUrl = null)
         {
@@ -90,9 +86,7 @@ namespace YemekSepeti.WebUI.Controllers
                 return View();
             }
 
-            /*Giriş yapan kullanıcının kim olduğunu, hangi ID’ye sahip olduğunu ve hangi role ait olduğunu 
-             ASP.NET Core tam olarak bu kod sayesinde biliyor*/
-            // Kullanıcının rol bilgisinin null olmaması için EfKullaniciDal GetUserByCredentials ile Rol include edildi.
+            // Kimlik doğrulama için Claim listesi oluştur
             var claims = new List<Claim>
             {
                 // Kullanıcı bilgilerini Claim olarak ekle
@@ -113,16 +107,19 @@ namespace YemekSepeti.WebUI.Controllers
                  return Redirect(returnUrl);
             }
 
-            // Rol bazlı yönlendirme (isteğe bağlı)
-            if (kullanici.Rol != null && kullanici.Rol.RolAd == "Admin")
-                return RedirectToAction("Index", "Admin");
+            // Rol bazlı yönlendirme
+            if (kullanici.Rol != null)
+            {
+                if (kullanici.Rol.RolAd == "Admin")
+                    return RedirectToAction("Index", "Admin");
+
+                if (kullanici.Rol.RolAd == "RestoranSahibi")
+                    return RedirectToAction("Index", "RestoranPanel");
+            }
 
             return RedirectToAction("Index", "Home");
         }
 
-        //HESAP BİLGİLERİ SAYFASI
-        // hesabım get metodu
-        //HESAP BİLGİLERİ SAYFASI
         // Profil (Hesabım) GET
         [HttpGet]
         public IActionResult Profil()
@@ -184,9 +181,7 @@ namespace YemekSepeti.WebUI.Controllers
             var user = _kullaniciService.TGetList(x => x.Email == email).FirstOrDefault();
 
             if (user == null) return RedirectToAction("GirisYap");
-
-            // Hata durumunda Profil sayfasına geri dönebilmek için user modelini View'e göndermeliyiz
-            
+           
             // Önceki şifre kontrolü
             if (user.Sifre != eskiSifre)
             {
@@ -233,9 +228,6 @@ namespace YemekSepeti.WebUI.Controllers
             TempData["ok"] = "Bilgiler başarıyla güncellendi.";
             return RedirectToAction("Hesabim");
         }
-
-
-
 
         // CikisYap metodu
         [HttpGet]

@@ -43,7 +43,7 @@ namespace YemekSepeti.BLL.Concrete
                 throw new Exception("Puan 1 ile 5 arasında olmalıdır.");
             }
 
-            // İş Kuralı: Yorum metni boş olamaz
+            //Yorum metni boş olamaz
             if (string.IsNullOrWhiteSpace(entity.YorumMetni))
             {
                 throw new Exception("Yorum metni boş olamaz.");
@@ -81,7 +81,7 @@ namespace YemekSepeti.BLL.Concrete
 
         public void TYorumGuncelleSP(Yorum yorum)
         {
-             // İş Kuralı: Puan 1-5 arasında olmalı
+             //Puan 1-5 arasında olmalı
             if (yorum.Puan < 1 || yorum.Puan > 5)
             {
                 throw new Exception("Puan 1 ile 5 arasında olmalıdır.");

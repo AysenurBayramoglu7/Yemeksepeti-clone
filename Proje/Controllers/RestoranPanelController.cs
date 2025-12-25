@@ -11,9 +11,6 @@ using YemekSepeti.WebUI.Models;
 
 namespace YemekSepeti.WebUI.Controllers
 {
-    // Admin panelinde [Authorize(Roles = "Admin")] vardı.
-    // Burada giriş yapmış olması yeterli, içeride "Restoran Sahibi mi?" kontrolü yapacağız.
-    // Eğer Rol sistemin oturmuşsa [Authorize(Roles = "RestoranSahibi")] de diyebilirsin.
     [Authorize]
     public class RestoranPanelController : Controller
     {
@@ -23,7 +20,7 @@ namespace YemekSepeti.WebUI.Controllers
         private readonly IUrunService _urunService;
         private readonly IUrunKategoriService _urunKategoriService;
         private readonly IRaporService _raporService;
-        private readonly IYorumService _yorumService; // EKLENDİ
+        private readonly IYorumService _yorumService; 
 
 
         public RestoranPanelController(
@@ -33,7 +30,7 @@ namespace YemekSepeti.WebUI.Controllers
             IUrunService urunService,
             IUrunKategoriService urunKategoriService,
             IRaporService raporService,
-            IYorumService yorumService) // EKLENDİ
+            IYorumService yorumService) 
         {
             _siparisService = siparisService;
             _restoranService = restoranService;
@@ -41,7 +38,7 @@ namespace YemekSepeti.WebUI.Controllers
             _urunService = urunService;
             _urunKategoriService = urunKategoriService;
             _raporService = raporService;
-            _yorumService = yorumService; // ATANDI
+            _yorumService = yorumService; 
         }
 
         // Yardımcı metod: Giriş yapan kullanıcının restoranını bul
@@ -61,10 +58,6 @@ namespace YemekSepeti.WebUI.Controllers
             var siparisler = _siparisService.TGetList(x => x.RestoranID == restoran.RestoranID)
                                             .OrderByDescending(x => x.Tarih)
                                             .ToList();
-
-            // 3. Admin panelindeki gibi ilişkili verileri doldurma (gerekirse)
-            // Örn: Kullanıcı adını görmek istersen burada siparis.Kullanici = ... diyebilirsin.
-
             ViewBag.RestoranAd = restoran.RestoranAd; // Başlıkta göstermek için
 
             return View(siparisler);
@@ -84,8 +77,7 @@ namespace YemekSepeti.WebUI.Controllers
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(userIdStr, out int userId)) return RedirectToAction("GirisYap", "Kullanici");
 
-            // 1. Mevcut siparişi çekip durumunu kontrol etmeliyiz
-            // (Concurrency/Eşzamanlılık durumunda veri tutarlılığı için tekrar DB'den çekmek iyidir)
+            //Mevcut siparişi çekip durumunu kontrol etmeliyiz
             var mevcutSiparis = _siparisService.TGet(x => x.SiparisID == siparisId);
             if (mevcutSiparis == null)
             {
@@ -93,14 +85,14 @@ namespace YemekSepeti.WebUI.Controllers
                 return RedirectToAction(nameof(Index));
             }
             
-            // KURAL 1: Teslim edilmiş sipariş iptal edilemez
+            //Teslim edilmiş sipariş iptal edilemez
             if (mevcutSiparis.Durum == SiparisDurumu.TeslimEdildi && (SiparisDurumu)yeniDurum == SiparisDurumu.IptalEdildi)
             {
                 TempData["Hata"] = "Müşteriye teslim edilmiş sipariş iptal edilemez!";
                 return RedirectToAction(nameof(Index));
             }
 
-            // KURAL 2: Zaten iptal edilmişse tekrar işlem yapma (Stok şişmesini önle)
+            // Zaten iptal edilmişse tekrar işlem yapma 
             if (mevcutSiparis.Durum == SiparisDurumu.IptalEdildi && (SiparisDurumu)yeniDurum == SiparisDurumu.IptalEdildi)
             {
                 TempData["Bilgi"] = "Bu sipariş zaten iptal edilmiş, işlem yapılmadı.";
@@ -109,7 +101,7 @@ namespace YemekSepeti.WebUI.Controllers
 
             try
             {
-                // 3. TRANSACTION (ATOMİK İŞLEM) BAŞLANGICI
+                //TRANSACTION (ATOMİK İŞLEM) BAŞLANGICI
                 // Sipariş durumu değişimi ve ürün stok iadesi "ya hep ya hiç" mantığıyla çalışmalı.
                 // Eğer stok güncellenirken hata olursa, sipariş durumu da eski haline döner.
                 using (var transaction = new System.Transactions.TransactionScope())
@@ -201,9 +193,7 @@ namespace YemekSepeti.WebUI.Controllers
 
             return View(model);
         }
-
-        // =================== ÜRÜN YÖNETİMİ ===================
-
+        // ÜRÜNLER KISMI
         // ----------------- ÜRÜN LİSTELEME -----------------
         public IActionResult Urunlerim()
         {
@@ -255,20 +245,6 @@ namespace YemekSepeti.WebUI.Controllers
             // ModelState'den RestoranID hatasını kaldır (biz atadık)
             ModelState.Remove("RestoranID");
 
-            // LİMİT KONTROLÜ: Max 27 Ürün
-            var mevcutUrunSayisi = _urunService.TGetList(x => x.RestoranID == restoran.RestoranID && x.AktifMi == true).Count;
-            if (mevcutUrunSayisi >= 27)
-            {
-                ViewBag.Hata = "Maksimum ürün sayısına ulaştınız (27). Daha fazla ürün ekleyemezsiniz.";
-                
-                ViewBag.UrunKategorileri = new SelectList(
-                    _urunKategoriService.TGetList(),
-                    "UrunKategoriID",
-                    "UrunKategoriAd"
-                );
-                return View(urun);
-            }
-
             if (!ModelState.IsValid)
             {
                 ViewBag.UrunKategorileri = new SelectList(
@@ -293,7 +269,7 @@ namespace YemekSepeti.WebUI.Controllers
 
             var urun = _urunService.TGet(x => x.UrunId == id);
 
-            // GÜVENLİK: Ürün bu restorana mı ait?
+            //Ürün bu restorana mı ait bakılır
             if (urun == null || urun.RestoranID != restoran.RestoranID)
             {
                 TempData["Hata"] = "Ürün bulunamadı veya düzenleme yetkiniz yok.";
@@ -321,7 +297,7 @@ namespace YemekSepeti.WebUI.Controllers
             // Mevcut ürünü bul
             var existing = _urunService.TGet(x => x.UrunId == urun.UrunId);
 
-            // GÜVENLİK: Ürün bu restorana mı ait?
+            //Ürün bu restorana mı ait bakılır
             if (existing == null || existing.RestoranID != restoran.RestoranID)
             {
                 TempData["Hata"] = "Ürün bulunamadı veya düzenleme yetkiniz yok.";
@@ -357,7 +333,7 @@ namespace YemekSepeti.WebUI.Controllers
             return RedirectToAction(nameof(Urunlerim));
         }
 
-        // ----------------- ÜRÜN SİL (SOFT DELETE) -----------------
+        // ----------------- ÜRÜN SİL SOFT DELETE -----------------
         public IActionResult UrunSil(int id)
         {
             var restoran = GetCurrentRestoran();
@@ -365,14 +341,14 @@ namespace YemekSepeti.WebUI.Controllers
 
             var urun = _urunService.TGet(x => x.UrunId == id);
 
-            // GÜVENLİK: Ürün bu restorana mı ait?
+            //Ürün bu restorana mı ait bakılır
             if (urun == null || urun.RestoranID != restoran.RestoranID)
             {
                 TempData["Hata"] = "Ürün bulunamadı veya silme yetkiniz yok.";
                 return RedirectToAction(nameof(Urunlerim));
             }
 
-            urun.AktifMi = false; // SOFT DELETE
+            urun.AktifMi = false; 
             _urunService.TUpdate(urun);
 
             TempData["Basarili"] = "Ürün başarıyla silindi.";
@@ -384,10 +360,15 @@ namespace YemekSepeti.WebUI.Controllers
         {
             var restoran = GetCurrentRestoran();
             if (restoran == null) return RedirectToAction("GirisYap", "Kullanici");
-
+            //View Kullanımı (vw_RestoranUrunSatisOzeti)
+            //Urun bazlı satış özeti
             var model = _raporService.GetUrunSatisOzeti(restoran.RestoranID)
                 .OrderByDescending(x => x.UrunBazliKazanc)
                 .ToList();
+            //fn_RestoranToplamKazanc
+            ViewBag.ToplamKazanc = _raporService.GetToplamKazanc(restoran.RestoranID);
+            //fn_RestoranTeslimSiparisSayisi
+            ViewBag.TeslimSiparisSayisi = _raporService.GetTeslimSiparisSayisi(restoran.RestoranID);
 
             return View(model);
         }

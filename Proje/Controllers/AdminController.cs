@@ -4,19 +4,17 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
-using YemekSepeti.BLL.Abstract;// IKullaniciService'e erişim için
+using YemekSepeti.BLL.Abstract;// IService'e erişim için
 using YemekSepeti.Entities;
-//using System; // try-catch için gerekli
-//using YemekSepeti.BLL.Abstract; // IKullaniciService'e erişim için
-//using YemekSepeti.BLL.Concrete; // KullaniciManager'a erişim için
-//using YemekSepeti.Entities; // Kullanici modeline erişim için
+
 
 namespace YemekSepeti.WebUI.Controllers
 {
-    // Controller'daki tüm metodlara erişimi sadece 'Admin' rolüyle sınırlandırır.
+    //Bu Controller'daki tüm metodlara erişimi sadece 'Admin' rolüyle sınırlandırır.
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
+        //// Kullanılacak servislerin dışarıdan değiştirilememesi için 'readonly' (sadece okunur) olarak tanımladık.
         private readonly IRestoranService _restoranService;
         private readonly IKategoriService _kategoriService;
         private readonly IKullaniciService _kullaniciService;
@@ -24,6 +22,7 @@ namespace YemekSepeti.WebUI.Controllers
         private readonly IUrunKategoriService _urunKategoriService;
         private readonly IRolService _rolService;
 
+        // Dependency Injection ile servisleri alır. yani yine bağımlılık enjeksiyonu yapıldı
         public AdminController(
             IRestoranService restoranService,
             IKategoriService kategoriService,
@@ -60,8 +59,8 @@ namespace YemekSepeti.WebUI.Controllers
         }
 
         // ----------------- RESTORAN EKLE (GET) -----------------
-        //Bunları SelectListItem haline getirir → ViewBag’e atar.
-         //View’de dropdown olarak görünür.
+        //Bunları liste haline getirir → ViewBag’e atar.
+        //View’de dropdown(açılır liste) olarak görünür. Yani admin seçeneklerden birini seçebilir.
         [HttpGet]
         public IActionResult RestoranEkle()
         {
@@ -90,9 +89,9 @@ namespace YemekSepeti.WebUI.Controllers
         [HttpPost]
         public IActionResult RestoranEkle(Restoran restoran)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid)//formdan gelen verler geçerli mi onu da entitydeki kurallara göre kontrol eder
             {
-                _restoranService.TInsert(restoran);
+                _restoranService.TInsert(restoran);//restoran nesnesini veritabanına ekle.
                 return RedirectToAction(nameof(RestoranListesi));
             }
 
@@ -126,14 +125,14 @@ namespace YemekSepeti.WebUI.Controllers
             r.OnayliMi = true;
             _restoranService.TUpdate(r);
 
-            return RedirectToAction(nameof(RestoranListesi));
+            return RedirectToAction(nameof(RestoranListesi)); //sayfayı yenileme yönlendir.
         }
 
         // ----------------- RESTORAN DÜZENLE (GET) -----------------
         [HttpGet]
         public IActionResult RestoranDuzenle(int id)
         {
-            var restoran = _restoranService.TGet(r => r.RestoranID == id);
+            var restoran = _restoranService.TGet(r => r.RestoranID == id);//x.RestoranID değeri, gelen id parametresine eşitse bunu bul 
             if (restoran == null) return NotFound();
 
             ViewBag.Kategoriler = new SelectList(
@@ -148,23 +147,26 @@ namespace YemekSepeti.WebUI.Controllers
 
         // ----------------- RESTORAN DÜZENLE (POST) -----------------
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]  //güvenlik için
         public IActionResult RestoranDuzenle(Restoran restoran)
         {
-            if (!ModelState.IsValid)
-            {
+            if (!ModelState.IsValid) 
+            {    //formdan gelen verler geçerli değilse
+                 // Dropdown tekrar doldurulur
                 ViewBag.Kategoriler = new SelectList(
                     _kategoriService.TGetList(),
                     "KategoriID",
                     "KategoriAd",
                     restoran.KategoriID
                 );
-                return View(restoran);
+                return View(restoran);//tekrar formu göster. Hatalar view 'de gösterilir.
             }
-
+            //düzenlenecek restoranı veritabanında bul
+            //existing  veritabanındaki mevcut restoran kaydını alır.
             var existing = _restoranService.TGet(r => r.RestoranID == restoran.RestoranID);
             if (existing == null) return NotFound();
 
+            //sadece değiştirilmek istenilen alanlar değişsin diye direk Update yapmıyoruz.
             existing.RestoranAd = restoran.RestoranAd;
             existing.Adres = restoran.Adres;
             existing.Telefon = restoran.Telefon;
@@ -191,9 +193,9 @@ namespace YemekSepeti.WebUI.Controllers
         // ----------------- ÇIKIŞ -----------------
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
+        public async Task<IActionResult> Logout() //asekron çıkış işlemi
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);//Burda cookie tabanlı oturumu sonlanır.
             return RedirectToAction("Index", "Home");
         }
 
@@ -280,7 +282,6 @@ namespace YemekSepeti.WebUI.Controllers
             return View(urunler);
         }
         // ----------------- ÜRÜN EKLE (GET) -----------------
-        // Formu göstermek için
         //Restoranları listelemeliyiz(hangi restorana ürün ekleyeceği için)
         //Kategorileri listelemeliyiz
         //Boş formu göstermeliyiz

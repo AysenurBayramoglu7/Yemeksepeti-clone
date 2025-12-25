@@ -30,7 +30,8 @@ namespace Proje.Controllers
 
             return View(favoriler);
         }
-
+        //Bu sayfa yenilenmeden, AJAX ile favori ekleme/silme işlemi yapıyor.
+        // return olarak view değil json döndürüyoruz.Yeni sayfa açılmasın diye.
         [HttpPost]
         public IActionResult Ekle(int restoranId)
         {

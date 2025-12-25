@@ -14,9 +14,9 @@ namespace YemekSepeti.WebUI.Controllers
     public class SiparisController : Controller
     {
         private readonly ISiparisService _siparisService;
-        private readonly IUrunService _urunService; // EKLENDİ
+        private readonly IUrunService _urunService; 
 
-        public SiparisController(ISiparisService siparisService, IUrunService urunService) // GÜNCELLENDİ
+        public SiparisController(ISiparisService siparisService, IUrunService urunService) 
         {
             _siparisService = siparisService;
             _urunService = urunService;
@@ -29,17 +29,17 @@ namespace YemekSepeti.WebUI.Controllers
             if (!int.TryParse(userIdStr, out int userId))
                 return RedirectToAction("Index", "Home");
 
-            // 1. Kullanıcının tüm siparişlerini çek
+            //Kullanıcının tüm siparişlerini çek
             var siparisler = _siparisService.KullaniciSiparisGecmisiGetir(userId)
                                             .OrderByDescending(x => x.Tarih)
                                             .ToList();
 
-            // 2. Modeli doldur
+            
             var modelListesi = new List<SiparisListesiViewModel>();
 
             foreach (var s in siparisler)
             {
-                // Her sipariş için detayları al
+                //Her sipariş için detayları al
                 var spDenGelenDetay = _siparisService.SiparisDetayGetir(s.SiparisID);
 
                 modelListesi.Add(new SiparisListesiViewModel
@@ -52,25 +52,25 @@ namespace YemekSepeti.WebUI.Controllers
             return View(modelListesi);
         }
 
-        // MÜŞTERİ İÇİN SİPARİŞ DETAY SAYFASI
+        // Kullanıcılar için sipariş detay sayfası
         [HttpGet]
         public IActionResult Detay(int id)
         {
-            // 1. Giriş yapan kullanıcıyı bul
+            //Giriş yapan kullanıcıyı bul
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(userIdStr, out int userId)) return RedirectToAction("GirisYap", "Kullanici");
 
-            // 2. Kullanıcının tüm siparişlerini çek
+            //Kullanıcının tüm siparişlerini çek
             var siparisler = _siparisService.KullaniciSiparisGecmisiGetir(userId)
                                             .OrderByDescending(x => x.Tarih)
                                             .ToList();
 
-            // 3. Modeli doldur (SP ile detayları çekerek)
+            //SP ile detayları çekerek modeli doldur
             var modelListesi = new List<SiparisListesiViewModel>();
 
             foreach (var s in siparisler)
             {
-                // BURASI KRİTİK: Her sipariş için SP'ye gidip detayları alıyoruz
+                //Her sipariş için SP'ye gidip detayları alıyoruz
                 var spDenGelenDetay = _siparisService.SiparisDetayGetir(s.SiparisID);
 
                 modelListesi.Add(new SiparisListesiViewModel
@@ -80,10 +80,10 @@ namespace YemekSepeti.WebUI.Controllers
                 });
             }
 
-            // 4. Dolu paketi View'a gönder
+            // Dolu paketi View'a gönder
             return View(modelListesi);
         }
-        // SİPARİŞ İPTAL ET (KULLANICI)
+        // SİPARİŞ İPTAL ET KULLANICI TARAFI İÇİN 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult IptalEt(int siparisId)
@@ -93,14 +93,14 @@ namespace YemekSepeti.WebUI.Controllers
 
             var siparis = _siparisService.TGet(x => x.SiparisID == siparisId);
 
-            // Güvenlik: Sipariş bu kullanıcıya mı ait?
+            // Sipariş bu kullanıcıya mı ait bakılır
             if (siparis == null || siparis.KullaniciID != userId)
             {
                 TempData["Hata"] = "Sipariş bulunamadı veya yetkiniz yok.";
                 return RedirectToAction("Index");
             }
 
-            // Kural: Sadece "Onay Bekliyor" aşamasındaysa iptal edilebilir.
+            //Sadece "Onay Bekliyor" aşamasındaysa iptal edilebilir.
             // (Hazırlanıyor ve sonrası iptal edilemez)
             if ((int)siparis.Durum >= (int)SiparisDurumu.Hazirlaniyor)
             {
@@ -109,10 +109,10 @@ namespace YemekSepeti.WebUI.Controllers
             }
 
             // --- STOK GERİ YÜKLEME ---
-            // 1. Sipariş detaylarını çek (Entity üzerinden)
+            // detayları geri çek
             var detaylar = _siparisService.GetSiparisDetaylariEntity(siparisId);
             
-            // 2. Her bir ürün için stoğu artır
+            //Her bir ürün için stoğu artır
             foreach (var item in detaylar)
             {
                  var urun = _urunService.TGet(u => u.UrunId == item.UrunID); 
@@ -122,9 +122,8 @@ namespace YemekSepeti.WebUI.Controllers
                      _urunService.TUpdate(urun);
                  }
             }
-            // -------------------------
 
-            // İptal işlemini yap
+            // İptal işlemini 
             try
             {
                _siparisService.KullaniciSiparisIptal(siparisId, userId);

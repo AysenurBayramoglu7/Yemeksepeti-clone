@@ -2,15 +2,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using YemekSepeti.BLL.Abstract;
 using YemekSepeti.WebUI.Models;
-// SessionExtensions Models altında olduğu için, o namespace'i kullanıyoruz.
-// Ayrıca YemekSepeti.Entities namespace'i SepetItem için gerekli.
 using YemekSepeti.Entities; 
 
 namespace YemekSepeti.WebUI.Controllers
 {
     // Sadece giriş yapmış kullanıcılar sepete erişebilir
-    // Sadece giriş yapmış kullanıcılar sepete erişebilir
-    // [Authorize] -> Misafirler de erişebilsin diye kaldırıldı/yorumlandı
     public class SepetController : Controller
     {
         private readonly IUrunService _urunService;
@@ -31,7 +27,7 @@ namespace YemekSepeti.WebUI.Controllers
         }
 
         // Sepete ürün ekler (AJAX ile çağrılır)
-        [HttpPost]
+        //[HttpPost]
         [HttpPost]
         public IActionResult Ekle(int urunId, int adet = 1)
         {
@@ -202,7 +198,6 @@ namespace YemekSepeti.WebUI.Controllers
                 ViewData["Hata"] = string.Join("<br/>", uyariMesajlari);
                 return View("Odeme", model);
             }
-            // ------------------------------------------------
 
             // Siparişi Oluştur
             var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -229,7 +224,7 @@ namespace YemekSepeti.WebUI.Controllers
                     });
                 }
 
-                // Veritabanına Kaydet (EF Core)
+                // Veritabanına Kaydet 
                 // Trigger devreye girecek ve stoğu düşecek.
                 _siparisService.TInsert(siparis);
 

@@ -23,10 +23,12 @@ namespace YemekSepeti.DAL.EntityFramework
         {
         }
 
+        // Bu methodu kullanarak stored procedure çağrısı yapabiliriz. ve bunu restoranControllerde kullanıyoruz.
         public List<Urun> GetUrunlerByRestoranSP(int restoranId)
         {
+            // RestoranId parametresi burada SQL parametresine dönüştürülür
             var param = new SqlParameter("@RestoranID", restoranId);
-
+            //restoranId aldığı için her restoran için ona ait ürünleri getirir.
             return _context.Urunler
                 .FromSqlRaw("EXEC up_UrunleriRestoranaGoreGetir @RestoranID", param)
                 .ToList();
