@@ -19,7 +19,7 @@ namespace YemekSepeti.BLL.Concrete
         {
             _raporDal = raporDal;
         }
-
+        //hemen return edilmesi için => kullanıldı
         public List<UrunSatisRaporDto> GetUrunSatisOzeti(int restoranId)
             => _raporDal.GetUrunSatisOzeti(restoranId);
 

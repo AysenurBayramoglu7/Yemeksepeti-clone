@@ -13,8 +13,6 @@ namespace YemekSepeti.BLL.Abstract
         void TInsert(T entity);
         void TUpdate(T entity);
         void TDelete(T entity);
-        // 2. READ İşlemleri (Tüm filtreleme işlemleri burada gerçekleşir)
-
         // DAL'daki GetList metoduna karşılık gelir.
         List<T> TGetList(Expression<Func<T, bool>>? filter = null);
 

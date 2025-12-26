@@ -68,11 +68,13 @@ namespace YemekSepeti.WebUI.Controllers
             //SP ile detayları çekerek modeli doldur
             var modelListesi = new List<SiparisListesiViewModel>();
 
+            //burada sadece id'si verilen siparişi bulup detaylarını alıyoruz.Sp ile
             foreach (var s in siparisler)
             {
                 //Her sipariş için SP'ye gidip detayları alıyoruz
                 var spDenGelenDetay = _siparisService.SiparisDetayGetir(s.SiparisID);
 
+                //View de hwm sipariş ve detayları birlikte göstermek için modeli doldur
                 modelListesi.Add(new SiparisListesiViewModel
                 {
                     Siparis = s,       // Ana veri
@@ -109,7 +111,7 @@ namespace YemekSepeti.WebUI.Controllers
             }
 
             // --- STOK GERİ YÜKLEME ---
-            // detayları geri çek
+            // detayları al
             var detaylar = _siparisService.GetSiparisDetaylariEntity(siparisId);
             
             //Her bir ürün için stoğu artır
@@ -122,8 +124,7 @@ namespace YemekSepeti.WebUI.Controllers
                      _urunService.TUpdate(urun);
                  }
             }
-
-            // İptal işlemini 
+            //kullanıcı sipariş iptal işlemi
             try
             {
                _siparisService.KullaniciSiparisIptal(siparisId, userId);

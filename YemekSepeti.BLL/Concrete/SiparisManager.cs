@@ -55,7 +55,7 @@ namespace YemekSepeti.BLL.Concrete
         {
             return _siparisDal.SiparisDetayGetir(siparisId);
         }
-
+        //Siparis iptali için siparis detaylarını entity olarak getir
         public List<SiparisDetay> GetSiparisDetaylariEntity(int siparisId)
         {
             return _siparisDal.GetSiparisDetaylariEntity(siparisId);
@@ -66,13 +66,13 @@ namespace YemekSepeti.BLL.Concrete
             SiparisDurumu yeniDurum,
             int restoranSahibiKullaniciId)
         {
-            // 1. Siparişi bul
+            //Siparişi bul
             var siparis = _siparisDal.Get(x => x.SiparisID == siparisId);
 
             if (siparis == null)
                 throw new Exception("Sipariş bulunamadı.");
 
-            // 2. Sipariş bu restoran sahibine mi ait?
+            //Sipariş bu restoran sahibine mi ait kontrol edilir.
             // (RestoranID → Restoran → KullaniciID)
             var restoran = _restoranDal.Get(x =>
                 x.RestoranID == siparis.RestoranID &&
@@ -81,19 +81,19 @@ namespace YemekSepeti.BLL.Concrete
             if (restoran == null)
                 throw new Exception("Bu sipariş üzerinde işlem yapma yetkiniz yok.");
 
-            // 3. Durum geçişi kontrolü
+            //Durum geçişi kontrolü olası tüm geçerli durumlar
             var mevcutDurum = (SiparisDurumu)siparis.Durum;
 
             bool gecerliGecis = (mevcutDurum == SiparisDurumu.OnayBekliyor &&yeniDurum == SiparisDurumu.Hazirlaniyor)
             || (mevcutDurum == SiparisDurumu.OnayBekliyor &&yeniDurum == SiparisDurumu.IptalEdildi)
-            || (mevcutDurum == SiparisDurumu.Hazirlaniyor && yeniDurum == SiparisDurumu.IptalEdildi) // EKLENDİ
+            || (mevcutDurum == SiparisDurumu.Hazirlaniyor && yeniDurum == SiparisDurumu.IptalEdildi) 
             || (mevcutDurum == SiparisDurumu.Hazirlaniyor && yeniDurum == SiparisDurumu.Yolda)
             || (mevcutDurum == SiparisDurumu.Yolda && yeniDurum == SiparisDurumu.TeslimEdildi);
 
             if (!gecerliGecis)
                 throw new Exception("Bu durum geçişi yapılamaz.");
 
-            // 4. Güncelle
+            //Güncelle
             siparis.Durum = yeniDurum;
             _siparisDal.Update(siparis);
 
@@ -107,7 +107,7 @@ namespace YemekSepeti.BLL.Concrete
             if (siparis.KullaniciID != kullaniciId)
                 throw new Exception("Bu sipariş size ait değil.");
 
-            // Durum kontrolü: Sadece OnayBekliyor iptal edilebilir.
+            // Sadece OnayBekliyor iptal edilebilir.
             if (siparis.Durum >= SiparisDurumu.Hazirlaniyor)
                 throw new Exception("Hazırlanmaya başlanan sipariş iptal edilemez.");
 

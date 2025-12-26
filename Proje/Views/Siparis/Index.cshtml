@@ -35,7 +35,9 @@
                             <th>Sipariş No</th>
                             <th>Tarih</th>
                             <th>Durum</th>
+                            <th>Çeşit</th>
                             <th>Tutar</th>
+
                             <th>Takip Kodu</th>
                             <th>İşlem</th>
                         </tr>
@@ -52,6 +54,13 @@
                                 <td class="align-middle">
                                     @* Durum Enum'ı senin SiparisDurumu.cs dosyanla eşleşir *@
                                     <span class="badge bg-secondary">@((SiparisDurumu)item.Siparis.Durum)</span>
+
+                                </td>
+                                <td class="align-middle text-center">
+                                    <span class="badge bg-light text-dark border">
+                                        <i class="bi bi-box-seam me-1"></i>
+                                        @item.Siparis.UrunCesidiSayisi
+                                    </span>
                                 </td>
                                 <td class="align-middle fw-bold text-success">@item.Siparis.ToplamTutar.ToString("C2")</td>
                                 <td class="align-middle"><code>@item.Siparis.TakipKodu</code></td>
@@ -90,7 +99,7 @@
                             </tr>
 
                             <tr>
-                                <td colspan="6" class="p-0 border-0">
+                                <td colspan="7" class="p-0 border-0">
                                     <div class="collapse" id="@targetId">
                                         <div class="p-3 bg-light border-bottom">
                                             <h6 class="mb-2">Sipariş İçeriği</h6>

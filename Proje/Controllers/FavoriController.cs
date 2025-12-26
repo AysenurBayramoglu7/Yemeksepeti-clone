@@ -24,11 +24,11 @@ namespace Proje.Controllers
 
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null) return RedirectToAction("GirisYap", "Kullanici");
-
+            // Kullanıcı ID'sini al ve Favori
             int kullaniciId = int.Parse(userIdClaim.Value);
             var favoriler = _favoriService.FavorileriGetir(kullaniciId);
 
-            return View(favoriler);
+            return View(favoriler);// View de model olarak favori restoranları gönderiyoruz.
         }
         //Bu sayfa yenilenmeden, AJAX ile favori ekleme/silme işlemi yapıyor.
         // return olarak view değil json döndürüyoruz.Yeni sayfa açılmasın diye.

@@ -6,13 +6,9 @@ namespace YemekSepeti.WebUI.Models
 {
     public class RestoranSiparisDetayViewModel
     {
-        // 1. Siparişin Genel Bilgileri (Tarih, Tutar, Adres, Müşteri Adı vb.)
-        // Bu veriler "Siparis" tablosundan gelir.
+        //Siparişin Genel Bilgileri (Tarih, Tutar, Adres, Müşteri Adı vb.)
         public Siparis Siparis { get; set; }
-
-        // 2. Siparişin İçindeki Ürünler (Hangi yemekten kaç tane?)
-        // Bu veriler senin dediğin "SiparisDetaylari" tablosundan gelir.
-        // Biz bunları "SiparisDetayDto" olarak taşıyoruz.
+        // Siparişe Ait Ürün Detayları
         public List<SiparisDetayDto> Urunler { get; set; }
     }
 }

@@ -97,26 +97,22 @@
         });
         //Bu script ana sayfada restoran kartındaki kalbe tıklayınca çalışıyor.
         /*restoranId: Hangi restoran favoriye eklenecek
-        event: Tıklama olayı (linke gitmeyi engellemek için)
-        btnElement: Tıklanan butonun HTML elemanı (ikon değiştirmek için) */
+        btnElement: ikon değiştirmek için */
     function favoriEkle(restoranId, event, btnElement) {
         // Kartın linkine gitmesini engelle
         event.preventDefault();//Kalp ikonuna tıklanınca restoran detay sayfasına gitmeyi engellemek.
         event.stopPropagation();//Tıklamanın kart içindeki diğer eventlere yayılmasını durdurur.
-         //Amac: kalp ikonu doluysa ekleme değil silme yapar.
+         //kalp ikonu doluysa ekleme değil silme yapar.
             // İkonu seçelim
             const icon = btnElement.querySelector('i');
-            // İkon dolu kalp mi? (yani zaten favori mi?)
+            // İkon dolu kalp mi kontrol edilir.
             const isFavorite = icon.classList.contains('bi-heart-fill');
 
                 // Eğer favoriyse 'Sil' metoduna, değilse 'Ekle' metoduna git
             const url = isFavorite ? '/Favori/Sil' : '/Favori/Ekle';
 
-            // İsteği gönderilecek URL
-        //const url = '/Favori/Ekle';
-        
-        // jQuery veya fetch ile POST isteği
-        // Burada native fetch kullanıyoruz (modern tarayıcılar için)
+        // fetch ile POST isteği
+        // Burada native fetch kullanıyoruz 
         fetch(url + '?restoranId=' + restoranId, {
             method: 'POST',
             headers: {

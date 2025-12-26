@@ -102,15 +102,16 @@ namespace YemekSepeti.WebUI.Controllers
             try
             {
                 //TRANSACTION (ATOMİK İŞLEM) BAŞLANGICI
-                // Sipariş durumu değişimi ve ürün stok iadesi "ya hep ya hiç" mantığıyla çalışmalı.
+                // iptalde stok adedi geri eklendiği için siparişde artık onay bekliyor değil iptal edildi durumuna geçmeli.
                 // Eğer stok güncellenirken hata olursa, sipariş durumu da eski haline döner.
                 using (var transaction = new System.Transactions.TransactionScope())
                 {
 
-                    // STOK İADE MANTIĞI (Eğer İptal Ediliyorsa ve eski durum İptal değilse)
+                    // İptal durumunda eğer daha önce iptal edilmemişse stokları geri ekle
                     if ((SiparisDurumu)yeniDurum == SiparisDurumu.IptalEdildi && mevcutSiparis.Durum != SiparisDurumu.IptalEdildi)
                     {
                         var detaylar = _siparisService.GetSiparisDetaylariEntity(siparisId);
+
                         foreach(var item in detaylar)
                         {
                             var urun = _urunService.TGet(u => u.UrunId == item.UrunID);
@@ -128,7 +129,6 @@ namespace YemekSepeti.WebUI.Controllers
                     // İşlemi onayla (Commit)
                     transaction.Complete(); 
                 }
-                // TRANSACTION BİTİŞİ
 
                 TempData["Basarili"] = "Sipariş durumu güncellendi.";
             }
@@ -355,7 +355,7 @@ namespace YemekSepeti.WebUI.Controllers
             return RedirectToAction(nameof(Urunlerim));
         }
 
-
+        //----------------- RAPORLAR -----------------
         public IActionResult Rapor()
         {
             var restoran = GetCurrentRestoran();
@@ -373,7 +373,7 @@ namespace YemekSepeti.WebUI.Controllers
             return View(model);
         }
 
-        // ----------------- YORUMLARIM (YENİ) -----------------
+        // ----------------- YORUMLARIM  -----------------
         [Authorize]
         public IActionResult Yorumlar()
         {

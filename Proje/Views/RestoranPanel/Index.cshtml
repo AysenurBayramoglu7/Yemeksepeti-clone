@@ -52,15 +52,17 @@
                                 <td>@item.ToplamTutar ₺</td>
 
                                 <td>
+
                                     <span class="badge
-                                                @(durum == SiparisDurumu.OnayBekliyor ? "bg-warning text-dark" :
-                                                                                    durum == SiparisDurumu.Hazirlaniyor ? "bg-info" :
-                                                                                    durum == SiparisDurumu.Yolda ? "bg-primary" :
-                                                                                    durum == SiparisDurumu.TeslimEdildi ? "bg-success" :
-                                                                                    "bg-danger")">
-                                @durum
-                            </span>
-                        </td>
+                                          @(durum == SiparisDurumu.OnayBekliyor ? "bg-warning text-dark" :
+                                            durum == SiparisDurumu.Hazirlaniyor ? "bg-info" :
+                                            durum == SiparisDurumu.Yolda ? "bg-primary" :
+                                            durum == SiparisDurumu.TeslimEdildi ? "bg-success" :
+                                            "bg-danger")">
+                                          @durum
+                                    </span>
+                               
+                                </td>
 
                                 <td>
                                     <form asp-action="DurumGuncelle"
@@ -71,15 +73,7 @@
                                         @Html.AntiForgeryToken()
 
                                         <input type="hidden" name="siparisId" value="@item.SiparisID" />
-                                        @*<select name="yeniDurum" class="form-select form-select-sm" style="width:150px">
-                                            <option value="0" selected="@(durum == SiparisDurumu.OnayBekliyor)">Onay Bekliyor</option>
-                                            <option value="1" selected="@(durum == SiparisDurumu.Hazirlaniyor)">Hazırlanıyor</option>
-                                            <option value="2" selected="@(durum == SiparisDurumu.Yolda)">Yolda</option>
-                                            <option value="3" selected="@(durum == SiparisDurumu.TeslimEdildi)">Teslim Edildi</option>
-                                            <option value="4" selected="@(durum == SiparisDurumu.IptalEdildi)">İptal Edildi</option>
-                                        </select>*@
 
-                                        <!-- YENİ KOD (bunu yaz): -->
                                         <select name="yeniDurum" class="form-select form-select-sm" style="width:150px">
                                     @if (durum == SiparisDurumu.OnayBekliyor)
                                             {

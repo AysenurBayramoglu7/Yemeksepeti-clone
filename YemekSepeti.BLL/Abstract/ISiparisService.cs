@@ -12,17 +12,17 @@ namespace YemekSepeti.BLL.Abstract
 {
     public interface ISiparisService : IGenericService<Siparis>
     {
-        //yeni metod
+        //yeni metodlar 
         List<SiparisGecmisiDto> KullaniciSiparisGecmisiGetir(int kullaniciId);
         List<SiparisDetayDto> SiparisDetayGetir(int siparisId);
-        List<SiparisDetay> GetSiparisDetaylariEntity(int siparisId); // EKLENDİ
+        List<SiparisDetay> GetSiparisDetaylariEntity(int siparisId); 
         void SiparisDurumGuncelle(
             int siparisId,
             SiparisDurumu yeniDurum,
             int restoranSahibiKullaniciId
         );
         
-        void KullaniciSiparisIptal(int siparisId, int kullaniciId); // EKLENDİ
+        void KullaniciSiparisIptal(int siparisId, int kullaniciId); 
 
     }
 }

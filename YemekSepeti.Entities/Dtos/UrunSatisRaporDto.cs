@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace YemekSepeti.Entities.Dtos
 {
+    //sanal tablo için dto yani veri tabanında view kulladığımız için
     public class UrunSatisRaporDto
     {
         public int RestoranID { get; set; }

@@ -15,6 +15,8 @@
         {
             <div class="col-md-4 mb-4">
                 @*Favorilerden de restoran detay sayfası listelenebilir. *@
+                @*Tıknabilir yap.*@
+                @*Joın sayesinde tüm restoran bilgisi geliyor.*@
                 <a asp-controller="Restoran" asp-action="Detay" asp-route-id="@r.RestoranID" class="text-decoration-none text-dark">
                     <div class="card shadow-sm border-0 h-100">
                          <div class="position-relative">
@@ -59,7 +61,7 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Kartı sayfadan kaldır
+                // Kartı sayfadan kaldırıyoruz
                 //Butonun bulunduğu .col-md-4 div’ini DOM’dan kaldırır.
                 const cardCol = btnElement.closest('.col-md-4');
                 cardCol.remove();

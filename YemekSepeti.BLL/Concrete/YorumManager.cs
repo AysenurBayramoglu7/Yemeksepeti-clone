@@ -13,8 +13,6 @@ namespace YemekSepeti.BLL.Concrete
     public class YorumManager : IYorumService
     {
         private readonly IYorumDal _yorumDal;
-
-        // Dependency Injection
         public YorumManager(IYorumDal yorumDal)
         {
             _yorumDal = yorumDal;
@@ -37,7 +35,7 @@ namespace YemekSepeti.BLL.Concrete
 
         public void TInsert(Yorum entity)
         {
-            // İş Kuralı: Puan 1-5 arasında olmalı
+            //Puan 1-5 arasında olmalı
             if (entity.Puan < 1 || entity.Puan > 5)
             {
                 throw new Exception("Puan 1 ile 5 arasında olmalıdır.");
@@ -70,7 +68,7 @@ namespace YemekSepeti.BLL.Concrete
 
         public void TYorumEkleSP(Yorum yorum)
         {
-            // İş Kuralı: Puan 1-5 arasında olmalı
+            // Puan 1-5 arasında olmalı
             if (yorum.Puan < 1 || yorum.Puan > 5)
             {
                 throw new Exception("Puan 1 ile 5 arasında olmalıdır.");

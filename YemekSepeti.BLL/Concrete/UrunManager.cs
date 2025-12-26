@@ -15,8 +15,6 @@ namespace YemekSepeti.BLL.Concrete
     public class UrunManager : IUrunService
     {
         private readonly IUrunDal _urunDal;
-        // Dependency Injection ile IUrunDal örneği alınıyor
-        // Bu sayede UrunManager, veri erişim katmanına bağımlı hale geliyor
         public UrunManager(IUrunDal urunDal)
         {
             _urunDal = urunDal;

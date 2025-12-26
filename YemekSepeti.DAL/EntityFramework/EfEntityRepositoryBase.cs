@@ -7,9 +7,10 @@ using YemekSepeti.DAL.Abstract;
 
 namespace YemekSepeti.DAL.EntityFramework
 {
-    // Kısıtlamayı sizin arayüzünüzdeki gibi ayarlıyoruz.
+    // Generic Repository Pattern'in Entity Framework için temel sınıfı
+    // her tablo için baştan yazmak yerine bu sınıf sayesinde ortak işlemler tanımlanmış olur.
     public class EfEntityRepositoryBase<T> : IGenericDal<T>
-        where T : class, new() // <-- IGenericDal'a eklenecek tek kısıtlama.
+        where T : class, new() // IGenericDal'a eklenecek tek kısıtlama.
     {
         // private → protected yapılıyor!
         protected readonly YemekSepetiDbContext _context;
@@ -19,14 +20,13 @@ namespace YemekSepeti.DAL.EntityFramework
             _context = context;
         }
 
-        // --- CRUD İşlemleri (Sizin İsimlerinizle) ---
+        // --- CRUD İşlemleri  ---
 
         // IGenericDal.Insert metodunu uyguluyor.
         public void Insert(T entity)
         {
             var addedEntity = _context.Entry(entity);
             addedEntity.State = EntityState.Added;
-            //_context.SaveChanges();
             int affected = _context.SaveChanges();
 
             Console.WriteLine("AFECTED ROWS = " + affected);
@@ -47,12 +47,7 @@ namespace YemekSepeti.DAL.EntityFramework
             deletedEntity.State = EntityState.Deleted;
             _context.SaveChanges();
         }
-
-        // --- READ İşlemleri (Sizin İsimlerinizle) ---
-
-        // --- Ekstra Metotlar (Filtreleme kolaylığı için) ---
-
-        // GetList'in eski mantığını geri getirelim (BLL'de filtreleme için çok önemlidir!)
+        // Read işlemleri Çoklu kayıt filtreleme
         public List<T> GetList(Expression<Func<T, bool>>? filter = null)
         {
             return filter == null

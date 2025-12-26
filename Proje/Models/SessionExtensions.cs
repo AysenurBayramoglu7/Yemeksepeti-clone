@@ -3,6 +3,7 @@ using System.Text.Json;
 
 namespace YemekSepeti.WebUI.Models
 {
+    //alışveriş sepeti gibi geçici verileri hafızada tutmak için kullanılır.
     // Session (Oturum) işlemlerini kolaylaştıran yardımcı sınıf.
     // Nesneleri JSON formatına çevirip kaydeder ve okur.
     public static class SessionExtensions

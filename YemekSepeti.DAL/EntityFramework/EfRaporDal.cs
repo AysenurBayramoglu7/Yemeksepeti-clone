@@ -23,6 +23,7 @@ namespace YemekSepeti.DAL.EntityFramework
 
         public List<UrunSatisRaporDto> GetUrunSatisOzeti(int restoranId)
         {
+            //sanal tabloyu kullanarak raporu çekiyoruz. O yüzden dto kullanıyoruz.
             return _context.Set<UrunSatisRaporDto>()
                 .FromSqlRaw(
                     "SELECT * FROM vw_RestoranUrunSatisOzeti WHERE RestoranID = @rid",
@@ -33,6 +34,7 @@ namespace YemekSepeti.DAL.EntityFramework
 
         public int GetTeslimSiparisSayisi(int restoranId)
         {
+            // Burda sqlQuery ile doğrudan fonksiyon çağrısı yapıyoruz.sonuç tek bir int değer döneceği için first ile alıyoruz.
             return _context.Database
                 .SqlQuery<int>($"SELECT dbo.fn_RestoranTeslimSiparisSayisi({restoranId}) AS Value")
                 .First();

@@ -17,9 +17,10 @@ namespace YemekSepeti.DAL.EntityFramework
         }
 
         // Restoran yorumlarını kullanıcı bilgileri ile getirir
+        //EF Core ü<erinden veri çekiyoruz/ kullanarak yorumları RestoranID'ye göre filtreler,
         public List<Yorum> GetYorumlarByRestoran(int restoranId)
         {
-            return _context.Yorumlar
+            return _context.Yorumlar // context üzerinden Yorumlar tablosuna erişiyoruz
                 .Include(y => y.Kullanici)
                 .Where(y => y.RestoranID == restoranId && y.AktifMi == true)
                 .OrderByDescending(y => y.CreatedAt)
@@ -28,7 +29,7 @@ namespace YemekSepeti.DAL.EntityFramework
 
         public List<Yorum> GetRestoranYorumlari(int restoranId)
         {
-            return _context.Yorumlar
+            return _context.Yorumlar // Restoran yorumlarını kullanıcı bilgileri ile getirir
                 .Include(y => y.Kullanici) // Kullanıcı bilgisini çekmeyi unutmuyoruz
                 .Where(x => x.RestoranID == restoranId && x.AktifMi == true)
                 .OrderByDescending(x => x.CreatedAt)
@@ -37,7 +38,6 @@ namespace YemekSepeti.DAL.EntityFramework
 
         public void TYorumEkleSP(Yorum yorum)
         {
-            // SP: [dbo].[up_YorumEkle]
             // Parametreler: @KullaniciID, @RestoranID, @SiparisID, @YorumMetni, @Puan
             
             var pKullanici = new Microsoft.Data.SqlClient.SqlParameter("@KullaniciID", yorum.KullaniciID);
@@ -52,7 +52,6 @@ namespace YemekSepeti.DAL.EntityFramework
 
         public void TYorumGuncelleSP(Yorum yorum)
         {
-            // SP: [dbo].[up_YorumGuncelle]
             // Parametreler: @KullaniciID, @SiparisID, @YeniYorum, @YeniPuan
 
             var pKullanici = new Microsoft.Data.SqlClient.SqlParameter("@KullaniciID", yorum.KullaniciID);

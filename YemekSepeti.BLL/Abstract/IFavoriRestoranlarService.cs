@@ -11,6 +11,7 @@ namespace YemekSepeti.BLL.Abstract
 {
     public interface IFavoriRestoranlarService : IGenericService<FavoriRestoranlar>
     {
+        // Favori restoran ekleme, silme ve listeleme metodları favorilere özel olarak tanımlanır.
         void FavoriEkle(int kullaniciId, int restoranId);
         void FavoriSil(int kullaniciId, int restoranId);
         List<Restoran> FavorileriGetir(int kullaniciId);

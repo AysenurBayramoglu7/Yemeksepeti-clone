@@ -29,17 +29,17 @@ namespace YemekSepeti.DAL.EntityFramework
 
         public List<SiparisDetayDto> SiparisDetayGetir(int siparisId)
         {
-            // 1. Parametreyi hazırla
+            //Parametreyi hazırla
             var pSiparisID = new SqlParameter("@SiparisID", siparisId);
 
-            // 2. SP'yi çalıştır (FromSqlRaw ile)
+            //SP'yi çalıştır (FromSqlRaw ile)
             // Bu kod veritabanına gider, SP'yi çalıştırır ve sonucu DTO listesine çevirir.
             return _context.Set<SiparisDetayDto>()
                            .FromSqlRaw("EXEC up_SiparisDetayGetir @SiparisID", pSiparisID)
                            .AsEnumerable() // Veriyi çekmek için
                            .ToList();
         }
-
+        // Bu metot sipariş iptalinde ürünlerin stoklarını geri eklemek için kullanılacak.
         public List<SiparisDetay> GetSiparisDetaylariEntity(int siparisId)
         {
             return _context.Set<SiparisDetay>()

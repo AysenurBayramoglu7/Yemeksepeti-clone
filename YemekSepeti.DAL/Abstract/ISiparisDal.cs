@@ -12,7 +12,6 @@ namespace YemekSepeti.DAL.Abstract
     {
         List<SiparisGecmisiDto> KullaniciSiparisGecmisiGetir(int kullaniciId);
         List<SiparisDetayDto> SiparisDetayGetir(int siparisId);
-        List<SiparisDetay> GetSiparisDetaylariEntity(int siparisId); // EKLENDİ
-
+        List<SiparisDetay> GetSiparisDetaylariEntity(int siparisId); 
     }
 }

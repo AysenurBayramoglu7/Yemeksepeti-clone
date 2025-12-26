@@ -18,7 +18,7 @@ namespace YemekSepeti.WebUI.Controllers
             _siparisService = siparisService;
         }
 
-        // POST: /Yorum/Ekle
+        // Post ile yorum ekleme
         [HttpPost]
         public IActionResult Ekle(int siparisId, int puan, string yorumMetni)
         {
@@ -54,7 +54,7 @@ namespace YemekSepeti.WebUI.Controllers
             //Yorumu oluştur ve kaydet
             try
             {
-                // Mevcut yorumu kontrol et yorum var mı yok mu?
+                // Mevcut yorumu kontrol et yorum var mı yok mu eğer varsa güncelle yoksa ekle
                 var existingYorum = _yorumService.TGet(x => x.SiparisID == siparisId);
 
                 if (existingYorum != null)
@@ -62,8 +62,8 @@ namespace YemekSepeti.WebUI.Controllers
                     // Yorum varsa güncelleme
                     existingYorum.Puan = puan;
                     existingYorum.YorumMetni = yorumMetni;
-                    existingYorum.RestoranID = siparis.RestoranID; // Güvenlik için
-                    existingYorum.KullaniciID = userId; // Güvenlik için
+                    existingYorum.RestoranID = siparis.RestoranID;
+                    existingYorum.KullaniciID = userId; 
 
                     _yorumService.TYorumGuncelleSP(existingYorum);
                     TempData["Basari"] = "Yorumunuz başarıyla güncellendi.";
@@ -105,7 +105,7 @@ namespace YemekSepeti.WebUI.Controllers
             return Json(new { exists = false });
         }
 
-        // YENİ: Yorum Silme İşlemi
+        //Kullanıcı Yorum Silme İşlemi de yapalabilir.
         [HttpPost]
         public IActionResult Sil(int siparisId)
         {
@@ -123,7 +123,7 @@ namespace YemekSepeti.WebUI.Controllers
                     return Json(new { success = false, message = "Yorum bulunamadı." });
                 }
 
-                // Güvenlik: Yorumu silmeye çalışan kişi, yorumun sahibi mi?
+                // Yorumu silmeye çalışan kişi, yorumun sahibi mi kontrol edilmeli.
                 if (yorum.KullaniciID != userId)
                 {
                     return Json(new { success = false, message = "Bu yorumu silmeye yetkiniz yok." });
@@ -131,7 +131,7 @@ namespace YemekSepeti.WebUI.Controllers
 
                 _yorumService.TDelete(yorum);
                 
-                // NOT: Trigger veritabanında tanımlı olduğu için, silme işlemi sonrası 
+                // Trigger veritabanında tanımlı olduğu için, silme işlemi sonrası 
                 // otomatik olarak Restoran puanını güncelleyecektir.
                 
                 return Json(new { success = true, message = "Yorum başarıyla silindi." });

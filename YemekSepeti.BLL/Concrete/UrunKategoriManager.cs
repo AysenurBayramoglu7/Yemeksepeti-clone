@@ -15,7 +15,6 @@ namespace YemekSepeti.BLL.Concrete
     public class UrunKategoriManager : IUrunKategoriService
     {
         private readonly IUrunKategoriDal _urunKategoriDal;
-        // Dependency Injection (Bağımlılık Enjeksiyonu)
         public UrunKategoriManager(IUrunKategoriDal urunKategoriDal)
         {
             _urunKategoriDal = urunKategoriDal;

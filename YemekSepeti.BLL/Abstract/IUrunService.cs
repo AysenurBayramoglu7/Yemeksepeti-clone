@@ -9,6 +9,7 @@ namespace YemekSepeti.BLL.Abstract
 {
     public interface IUrunService : IGenericService<Urun>
     {
+        // Restoranlar için ürünleri SP kullanarak getirir 
         List<Urun> GetUrunlerByRestoranSP(int restoranId);
     }
 }

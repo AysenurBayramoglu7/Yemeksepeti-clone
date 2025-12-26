@@ -9,7 +9,7 @@ namespace YemekSepeti.DAL.Abstract
 {
     public interface IYorumDal : IGenericDal<Yorum>
     {
-        // Restoran yorumlarını getir (kullanıcı adı ile birlikte)
+        // Restoran yorumlarını getir 
         List<Yorum> GetYorumlarByRestoran(int restoranId);
         List<Yorum> GetRestoranYorumlari(int restoranId); // RESTORAN PANELİ İÇİN
         

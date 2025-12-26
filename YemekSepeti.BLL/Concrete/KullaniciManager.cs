@@ -14,17 +14,6 @@ namespace YemekSepeti.BLL.Concrete
 {
     public class KullaniciManager : IKullaniciService
     {
-        //Repository Tasarım Kalıbı
-
-        /*private readonly IGenericDal<Kullanici> _kullaniciDal;
-
-        // Constructor: Repository'i manuel olarak başlatıyoruz.
-        // Normalde bu adım Dependency Injection ile yapılır.
-        public KullaniciManager(IGenericDal<Kullanici> kullaniciDal)
-        {
-            // Gelen objeyi değişkenimize atıyoruz.
-            _kullaniciDal = kullaniciDal;
-        }*/
         private readonly IKullaniciDal _kullaniciDal;
 
         public KullaniciManager(IKullaniciDal kullaniciDal)
@@ -51,7 +40,7 @@ namespace YemekSepeti.BLL.Concrete
         //giriş yapmak için
         public void TInsert(Kullanici yeniKullanici)
         {
-            // 1. Kural: E-posta zaten kayıtlı mı?
+            // E-posta zaten kayıtlı mı kontrolü
             // IKullaniciDal'ın Get metodu ile veritabanında aynı e-postaya sahip bir kullanıcı aranır.
             Kullanici? mevcutKullanici = _kullaniciDal.Get(k => k.Email == yeniKullanici.Email);
 
@@ -61,20 +50,20 @@ namespace YemekSepeti.BLL.Concrete
                 throw new Exception("Bu e-posta adresi zaten kullanılmaktadır. Lütfen farklı bir adres girin.");
             }
 
-            // 2. Kural: Şifre uzunluğu kontrolü (Basit validasyon)
+            // Şifre uzunluğu kontrolü 
             if (string.IsNullOrEmpty(yeniKullanici.Sifre) || yeniKullanici.Sifre.Length < 6)
             {
                 throw new Exception("Şifre en az 6 karakter olmalıdır.");
             }
 
-            // 3. Kural: Varsayılan Rol (Müşteri) atama
+            // Varsayılan Rol atama varsayılan olarak müşteri rolü atanır
             // Eğer RolID sıfır olarak geldiyse, kullanıcıya varsayılan Müşteri rolünü atıyoruz (RolID = 3 varsayımı).
             if (yeniKullanici.RolID == 0)
             {
                 yeniKullanici.RolID = 3;
             }
 
-            // 4. DAL Çağrısı: Tüm kurallar geçti, veriyi DAL'a gönder.
+            // Tüm kurallar geçtiyse veriyi DAL'a gönderiyoruz
             // _kullaniciDal'ın Insert metodu çağrılır ve bu, EfEntityRepositoryBase'deki SaveChanges komutunu çalıştırır.
             _kullaniciDal.Insert(yeniKullanici);
         }
@@ -83,14 +72,13 @@ namespace YemekSepeti.BLL.Concrete
         {
             _kullaniciDal.Update(entity);
         }
-        // KullaniciManager.cs içine eklenmeli:
 
         public Kullanici TLogin(string email, string sifre)
         {
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(sifre))
                 throw new Exception("Email ve şifre boş bırakılamaz.");
 
-            // 🔥 ARTIK Include ile Rol geliyor
+            // Artık kullanıcıyı veritabanında arıyoruz
             Kullanici? user = _kullaniciDal.GetUserByCredentials(email, sifre);
 
             if (user == null)

@@ -11,8 +11,6 @@ namespace YemekSepeti.DAL.EntityFramework
 {
     public class EfRolDal: GenericRepository<Rol> , IRolDal
     {
-        // Üst sınıfın (GenericRepository) constructor'ını çağırıyoruz.
-        // Dışarıdan DbContext'i alıp, base (GenericRepository) sınıfına gönderiyoruz.
         public EfRolDal(YemekSepetiDbContext context) : base(context)
         {
         }

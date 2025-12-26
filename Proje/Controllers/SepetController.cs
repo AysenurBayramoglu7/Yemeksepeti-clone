@@ -105,9 +105,8 @@ namespace YemekSepeti.WebUI.Controllers
                     }
                     else
                     {
-                         // 0 veya altına düşerse silmeyelim, 1 de kalsın veya kullanıcı "Sil" butonunu kullansın
-                         // İsteğe bağlı: 1'in altına inmesin
-                         if(yeniAdet <= 0) urun.Adet = 1;
+                        // Adet 0 veya negatif olursa en az 1 yap
+                        if (yeniAdet <= 0) urun.Adet = 1;
                     }
                     
                     HttpContext.Session.SetJson("Sepet", sepet);
@@ -127,7 +126,7 @@ namespace YemekSepeti.WebUI.Controllers
                 return RedirectToAction("GirisYap", "Kullanici", new { returnUrl = "/Sepet/Tamamla" });
             }
 
-            // Sepet Dolu mu?
+            // Sepet Dolu mu Kontrolü
             var sepet = HttpContext.Session.GetJson<SepetViewModel>("Sepet");
             if (sepet == null || sepet.SepetItems.Count == 0)
             {
@@ -177,7 +176,7 @@ namespace YemekSepeti.WebUI.Controllers
                 return View("Odeme", model);
             }
 
-            // --- STOK KONTROLÜ (MANUEL DÜZELTME İÇİN UYARI) ---
+            //  STOK KONTROLÜ eğer üründen fazla istenirse uyar. 
             bool stokSorunuVar = false;
             List<string> uyariMesajlari = new List<string>();
 
@@ -255,7 +254,7 @@ namespace YemekSepeti.WebUI.Controllers
             return RedirectToAction("Index");
         }
 
-        // Sepeti tamamen boşaltır
+        // Sepeti tamamen boşaltıyruz.
         public IActionResult Temizle()
         {
             HttpContext.Session.Remove("Sepet");

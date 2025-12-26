@@ -59,7 +59,7 @@ namespace YemekSepeti.WebUI.Controllers
 
             if (restoran == null)
                 return NotFound();
-            // Restorana ait ürünleri getiriyoruz. Stored Procedure ile
+            // Restorana ait ürünleri getiriyoruz. Stored Procedure ile Sp ise EfUrunDal'de tanımlı
             var urunler = _urunService.GetUrunlerByRestoranSP(id);
 
 

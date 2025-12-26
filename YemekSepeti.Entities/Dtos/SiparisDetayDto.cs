@@ -9,11 +9,8 @@ namespace YemekSepeti.Entities.Dtos
     public class SiparisDetayDto
     {
         public string UrunAd { get; set; } = string.Empty;
-
         public int Adet { get; set; }
-
         public decimal Fiyat { get; set; }
-
         public decimal SatirToplam { get; set; }
     }
 }

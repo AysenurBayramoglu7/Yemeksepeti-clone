@@ -7,10 +7,9 @@ using YemekSepeti.Entities;
 
 namespace YemekSepeti.DAL.Abstract
 {
-    // IgenericDal dan miras aldırdık
     public interface IKullaniciDal: IGenericDal<Kullanici>
     {
-        // 🔑 Login işlemi için sadece e-posta ve şifre ile sorgulama yapar.
+        // Email ve şifreye göre kullanıcıyı getirir
         Kullanici? GetUserByCredentials(string email, string sifre);
     }
 }

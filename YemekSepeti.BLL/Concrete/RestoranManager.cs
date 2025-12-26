@@ -14,7 +14,7 @@ namespace YemekSepeti.BLL.Concrete
     {
         private readonly IRestoranDal _restoranDal;
 
-        // Dependency Injection (Bağımlılık Enjeksiyonu)
+        // Dependency Injection 
         public RestoranManager(IRestoranDal restoranDal)
         {
             _restoranDal = restoranDal;
@@ -22,8 +22,8 @@ namespace YemekSepeti.BLL.Concrete
 
         public void TDelete(Restoran entity)
         {
-            // İŞ KURALI: Soft Delete (Pasifleştirme) Uygulanması
-            // Siparişler, Yorumlar gibi bağlı veriler olduğu için hard delete yerine pasifleştirme tercih edilir.
+            //Soft Delete için gerekli iş kuralları 
+            // Siparişler, Yorumlar gibi bağlı veriler olduğu için hard delete yerine soft delete tercih edilir.
 
             var restoranToDelete = _restoranDal.Get(r => r.RestoranID == entity.RestoranID);
 
@@ -40,43 +40,40 @@ namespace YemekSepeti.BLL.Concrete
 
         public Restoran? TGet(Expression<Func<Restoran, bool>> filter)
         {
-            // DAL ÇAĞRISI: Filtreye uyan tek bir kaydı döndür.
+            //Filtreye uyan tek bir kaydı döndür.
             return _restoranDal.Get(filter);
         }
 
         public List<Restoran> TGetList(Expression<Func<Restoran, bool>>? filter = null)
         {
-            // DAL ÇAĞRISI: Filtre varsa filtreyi uygulayarak tüm listeyi döndür.
+            //Filtre varsa filtreyi uygulayarak tüm listeyi döndür.
             return _restoranDal.GetList(filter);
         }
 
         public void TInsert(Restoran entity)
         {
-            // İŞ KURALI 1: Restoran Adı Zorunlu Kontrolü
+            //Restoran Adı Zorunlu Kontrolü
             if (string.IsNullOrWhiteSpace(entity.RestoranAd))
             {
                 throw new Exception("Restoran adı boş bırakılamaz.");
             }
 
-            // İŞ KURALI 2: Varsayılan Değer Atama (Admin onayı ve Aktiflik durumu)
+            // Varsayılan Değer Atama
             entity.OnayliMi = false; // Yeni kayıtlar varsayılan olarak onaysız başlar.
             entity.AktifMi = true; // Yeni kayıt aktif olarak eklenir.
-            entity.CreatedAt = DateTime.Now; // Oluşturulma tarihi BLL'de set edilir.
+            entity.CreatedAt = DateTime.Now; 
 
-            // DAL ÇAĞRISI: Veriyi veritabanına kaydet
+            //Veriyi veritabanına kaydet
             _restoranDal.Insert(entity);
         }
 
         public void TUpdate(Restoran entity)
         {
-            // İŞ KURALI: Güncellenmek istenen RestoranID kontrolü
+            //Güncellenmek istenen RestoranID kontrolü
             if (entity.RestoranID <= 0)
             {
                 throw new Exception("Güncellenecek restoran ID'si geçersiz.");
             }
-
-            // Not: Eğer şifreleme/karma (hashing) gibi işlemler olsaydı, onlar da burada yapılırdı.
-
             // DAL ÇAĞRISI: Veriyi veritabanında güncelle
             _restoranDal.Update(entity);
         }

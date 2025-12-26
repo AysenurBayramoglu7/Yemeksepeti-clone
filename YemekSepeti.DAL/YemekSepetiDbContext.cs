@@ -58,9 +58,9 @@ namespace YemekSepeti.DAL
             // Yorum - Kullanici İlişkisi
             modelBuilder.Entity<Yorum>()
                 .HasOne(y => y.Kullanici)
-                .WithMany(k => k.Yorumlar) // Kullanici.cs'e Yorumlar eklendi
+                .WithMany(k => k.Yorumlar) 
                 .HasForeignKey(y => y.KullaniciID)
-                .OnDelete(DeleteBehavior.Restrict); // Kısıtla
+                .OnDelete(DeleteBehavior.Restrict); 
 
             // Yorum - Restoran İlişkisi
             modelBuilder.Entity<Yorum>()
@@ -74,20 +74,20 @@ namespace YemekSepeti.DAL
                 .HasOne(y => y.Urun)
                 .WithMany(u => u.Yorumlar) // Urun.cs'e Yorumlar eklendi
                 .HasForeignKey(y => y.UrunID)
-                .OnDelete(DeleteBehavior.Restrict); // Kısıtla
-                                                    // SiparisDetay - Siparis İlişkisi
+                .OnDelete(DeleteBehavior.Restrict); 
+                                                    
             modelBuilder.Entity<SiparisDetay>()
                 .HasOne(sd => sd.Siparis)
                 .WithMany(s => s.SiparisDetaylar)
                 .HasForeignKey(sd => sd.SiparisID)
-                .OnDelete(DeleteBehavior.Restrict); // Kısıtla
+                .OnDelete(DeleteBehavior.Restrict); 
 
             // SiparisDetay - Urun İlişkisi
             modelBuilder.Entity<SiparisDetay>()
                 .HasOne(sd => sd.Urun)
                 .WithMany(u => u.SiparisDetaylar)
                 .HasForeignKey(sd => sd.UrunID)
-                .OnDelete(DeleteBehavior.Restrict); // Kısıtla
+                .OnDelete(DeleteBehavior.Restrict); 
 
             modelBuilder.Entity<Yorum>()
                 .HasOne(y => y.Siparis)
@@ -109,8 +109,6 @@ namespace YemekSepeti.DAL
             
             modelBuilder.Entity<Siparis>().ToTable("Siparis");
 
-            
-
             // Fiyat Alanları
             modelBuilder.Entity<Siparis>().Property(s => s.ToplamTutar).HasPrecision(18, 2);
             modelBuilder.Entity<SiparisDetay>().Property(sd => sd.Fiyat).HasPrecision(18, 2);
@@ -120,7 +118,7 @@ namespace YemekSepeti.DAL
             modelBuilder.Entity<Restoran>().Property(r => r.Puan).HasPrecision(3, 2); 
             modelBuilder.Entity<Restoran>().Property(r => r.MinSiparisTutar).HasColumnType("decimal(18,2)");
 
-
+            // ROL AYARLARI VE BAŞLANGIÇ VERİLERİ burda verilir zorunlu olduğu için hata almamak için
             modelBuilder.Entity<Rol>().HasData(
                  new Rol { RolID = 1, RolAd = "Admin" },
                 new Rol { RolID = 2, RolAd = "RestoranSahibi" },
@@ -147,8 +145,9 @@ namespace YemekSepeti.DAL
                 .WithMany(r => r.FavoriKullanicilar)
                 .HasForeignKey(fr => fr.RestoranID)
                 .OnDelete(DeleteBehavior.Restrict);
-           
+
             //  SP DTO (Keyless Entity)
+            // Bunlar sadece SP sonuçlarını tutmak için kullanıyoruz.yani yeni tablo oluşturulmaz.
             modelBuilder.Entity<SiparisGecmisiDto>().HasNoKey();// Keyless entity olarak tanımlanır.Yani tablo oluşturulmaz.
             modelBuilder.Entity<SiparisDetayDto>().HasNoKey();
             modelBuilder.Entity<UrunSatisRaporDto>().HasNoKey();

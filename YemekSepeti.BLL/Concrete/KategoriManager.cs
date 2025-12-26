@@ -38,7 +38,7 @@ namespace YemekSepeti.BLL.Concrete
 
         public void TInsert(Kategori entity)
         {
-            // İŞ KURALI: Kategori Adı Boş Olamaz
+            //Kategori Adı Boş Olamaz
             if (string.IsNullOrWhiteSpace(entity.KategoriAd))
             {
                 throw new Exception("Kategori adı boş geçilemez.");

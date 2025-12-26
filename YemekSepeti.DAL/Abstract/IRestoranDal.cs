@@ -9,6 +9,5 @@ namespace YemekSepeti.DAL.Abstract
 {
     public interface IRestoranDal : IGenericDal<Restoran>
     {
-        // Restoran'a özgü metodlar
     }
 }

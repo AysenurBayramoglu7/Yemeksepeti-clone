@@ -7,7 +7,7 @@ using YemekSepeti.DAL.EntityFramework;
 using static YemekSepeti.DAL.Abstract.IFavoriRestoranlarDal;
 
 var builder = WebApplication.CreateBuilder(args);
-
+// sadece giriş yapma işlemi için cookie tabanlı
 //Authentication(Kimlik Doğrulama) Servisini Ekleme
 builder.Services.AddAuthentication("Cookies") // "Cookies" şeması ile kimlik doğrulamayı etkinleştir
     .AddCookie("Cookies", options =>
@@ -19,7 +19,6 @@ builder.Services.AddAuthentication("Cookies") // "Cookies" şeması ile kimlik d
     });
 //Dependency Injection (Bağımlılık Enjeksiyonu) Ayarları yani
 //Birisi senden bu arayüzü isterse, ona şu sınıfı oluşturup ver.
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<YemekSepetiDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -61,31 +60,30 @@ builder.Services.AddScoped<IRaporService, RaporManager>();
 builder.Services.AddScoped<IYorumDal, EfYorumDal>();
 builder.Services.AddScoped<IYorumService, YorumManager>();
 
-
+//Session özelliği kapalı gelir, açmamız gerekir.
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.IdleTimeout = TimeSpan.FromMinutes(30); //
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Burası uygulama yapılandırma kısmı
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
-app.UseAuthentication();
-app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseAuthentication();// Kimlik kontrolu
+app.UseHttpsRedirection();// http isteklerini https ye yönlendir
+app.UseStaticFiles();// Resimleri, Css leri dışarıya aç
 
 app.UseRouting();
 
-app.UseSession(); // Session Middleware
+app.UseSession(); 
 
 app.UseAuthorization();
 
