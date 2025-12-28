@@ -14,7 +14,6 @@ namespace YemekSepeti.Entities
         public decimal Fiyat { get; set; }
         public int Adet { get; set; }
         
-        // Ekstra özellikler (UI'da göstermek için)
         public string? FotoUrl { get; set; }
         public int RestoranId { get; set; }
         

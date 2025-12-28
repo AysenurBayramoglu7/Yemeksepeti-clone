@@ -25,24 +25,20 @@ namespace YemekSepeti.Entities
         [MaxLength(500)]
         public string Sifre { get; set; } = string.Empty;
 
-        //yeni eklenen alanlar
-        // EKLENEN ALANLAR
+       
         [MaxLength(250)]
-        public string? Adres { get; set; } // opsiyonel
+        public string? Adres { get; set; } 
 
         [MaxLength(15)]
-        public string? Telefon { get; set; } // opsiyonel
+        public string? Telefon { get; set; } 
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public bool IsActive { get; set; } = true;
 
         //ilişkilendirmek için foreign key (FK), Rol tablosuna gidebilmek için
-        //EF Core'a ve sizin C# kodunuza mantıksal ilişkiyi anlatır.
-        //rol türünde bir property olmalı
         public int RolID { get; set; } // FK
-        public virtual Rol? Rol { get; set; } // Navigation Property EF core için. 1'e N ilişkisi için
-        //public object Siparisler { get; set; }
-        public virtual ICollection<Siparis> Siparisler { get; set; } = new HashSet<Siparis>(); // deneme amaçlı
+        public virtual Rol? Rol { get; set; } // Navigation Property . 1'e N ilişkisi için
+        public virtual ICollection<Siparis> Siparisler { get; set; } = new HashSet<Siparis>(); 
         public virtual ICollection<Yorum> Yorumlar {  get; set; } = new HashSet<Yorum>();
         public virtual ICollection<FavoriRestoranlar> FavoriRestoranlar { get; set; } = new HashSet<FavoriRestoranlar>();
     }

@@ -8,7 +8,7 @@ namespace YemekSepeti.Entities
 {
     public enum SiparisDurumu
     {
-        OnayBekliyor = 0,   // Varsayılan (Yeni Sipariş)
+        OnayBekliyor = 0,   // Varsayılan Yeni Sipariş
         Hazirlaniyor = 1,   // Restoran Onayladı
         Yolda = 2,          // Kuryede
         TeslimEdildi = 3,   // Bitti

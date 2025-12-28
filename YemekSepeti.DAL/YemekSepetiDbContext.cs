@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-// EF core ile veri tabanı bağlantısı sağlıyıcaz
+// EF core ile veri tabanı bağlantısı sağlamalıyız.
 using Microsoft.EntityFrameworkCore;
 using YemekSepeti.Entities;
 using YemekSepeti.Entities.Dtos;
@@ -36,7 +36,7 @@ namespace YemekSepeti.DAL
         public DbSet<RestoranSonuc> RestoranSonuc { get; set; }
 
 
-        //  İLİŞKİ AYARLARI BURAYA GELECEK
+        //  İLİŞKİ AYARLARI BURADA
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -67,7 +67,7 @@ namespace YemekSepeti.DAL
                 .HasOne(y => y.Restoran)
                 .WithMany(r => r.Yorumlar)
                 .HasForeignKey(y => y.RestoranID)
-                .OnDelete(DeleteBehavior.Restrict); // Kısıtla
+                .OnDelete(DeleteBehavior.Restrict); 
 
             // Yorum - Urun İlişkisi
             modelBuilder.Entity<Yorum>()

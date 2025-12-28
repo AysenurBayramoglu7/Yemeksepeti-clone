@@ -12,11 +12,11 @@ namespace YemekSepeti.Entities
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int FavoriID { get; set; }  // PK — Identity
-        // Kullanicinin favori yaptığı restoranın ID'si (PK parçası)
+        public int FavoriID { get; set; }  
+        // Kullanicinin favori yaptığı restoranın ID'si PK parçası
         public int KullaniciID { get; set; }
 
-        // Restoranın ID'si (PK parçası)
+        // Restoranın ID'si PK parçası
         public int RestoranID { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
