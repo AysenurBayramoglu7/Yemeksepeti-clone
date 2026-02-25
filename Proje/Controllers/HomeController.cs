@@ -56,11 +56,11 @@ namespace Proje.Controllers
 
                 //Gerçek verileri BLL üzerinden çekiyoruz. yani Puan, Tutar gibi kısımlar dolu geliyor
                 restoranlar = _restoranService
-                                .TGetList(r => ids.Contains(r.RestoranID));//asıl veri restoranlar tablosunda sp ile filtreleme yapıyoruz
+                                .TGetList(r => ids.Contains(r.RestoranID) && r.AktifMi == true && r.OnayliMi == true);//asıl veri restoranlar tablosunda sp ile filtreleme yapıyoruz
             }
             else
             {
-                restoranlar = _restoranService.TGetList();//arama yapılmadıysa tüm restoranları getir
+                restoranlar = _restoranService.TGetList(x => x.AktifMi == true && x.OnayliMi == true);//arama yapılmadıysa tüm restoranları getir
             }
 
             var model = new HomeViewModel
