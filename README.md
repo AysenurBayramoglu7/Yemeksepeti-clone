@@ -17,7 +17,8 @@ Proje Adı: Yemek Sepeti – Veritabanı Projesi
 -Bootstrap
 
 4.VERİ TABANI KURULUMU
-1-scripts klasöründekicrip dosyalarını sırasıyla SonKezTemizTablolar.sql sonrasında SP_Func_view_trigger.sql bu sql sorgularını çalıştırarak veri tabanını kurabilirsiniz.(Tek sorgu olarak yaptıklarım hata verdiği için 2 sorgu dosyası olarak ayırdım.)
+1-Scripts klasöründeki script dosyalarını sırasıyla çalıştırarak veri tabanını kurabilirsiniz:
+Önce SonKezTemizTablolar.sql sonrasında SP_Func_view_trigger.sql (Tek sorgu olarak yaptıklarım hata verdiği için 2 sorgu dosyası olarak ayırdım.)
 2-SQL Server Management Studio üzerinden çalıştırın.
 3-Veritabanı YemekSepetiProje adıyla oluşturulacaktır.
 4-Tüm tablolar, Stored Procedure’ler, Trigger’lar, Fonksiyonlar ve View otomatik olarak oluşur.
